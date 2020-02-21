@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library path="machine/data/">
+   <!--Estructura sugerida para guardar audios en archivo xml-->
+   <events idx="1" type="cell" size="1 9">
+      <audio id="00001">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="char" >Auxilio_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00002">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="char" >Aaaaaaah_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00003">
+      <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="char" >Ayuda_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00004">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="char" >Auxilio_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00005">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="char" >Aaaaaaah_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00006">
+      <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="char" >Ayuda_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00007">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="char" >Auxilio_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00008">
+         <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="char" >Aaaaaaah_metros_angulo</CLASS_NAME>
+      </audio>
+      <audio id="00009">
+      <STARTSECOND type="double" >4.81175</STARTSECOND>
+         <ENDSECOND type="double" >5.86571875</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="char" >Ayuda_metros_angulo</CLASS_NAME>
+      </audio>
+   </events>
+   <background idx="1">
+      <audio id="00000">
+         <CLASS_ID type="double" >0</CLASS_ID>
+         <CLASS_NAME  type="char" >background</CLASS_NAME>
+         <SUBCLASS  type="char" >?</SUBCLASS>
+      </audio>
+   </background>
+</library>
