@@ -16,7 +16,7 @@ def find_input_device():
     return index
 
 NUM_SAMPLES = 2048
-SAMPLING_RATE = 22050
+SAMPLING_RATE = 20000
 pa = pyaudio.PyAudio()
 index = find_input_device()
 stream = pa.open(format=pyaudio.paInt16,
