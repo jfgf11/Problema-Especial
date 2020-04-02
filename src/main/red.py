@@ -11,6 +11,7 @@ def cargarModelo(pRutaModelo, pRutaPesos):
 
   return modelo
 
+modelo1.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
 rutaModelo=".Modelo_Jorge_1.json"
 rutaPesos=".Pesos_Modelo_Jorge_1.h5"
 
