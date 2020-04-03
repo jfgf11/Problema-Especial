@@ -8,7 +8,6 @@ import time
 import librosa
 from tensorflow.keras.models import model_from_json
 
-
 rutaModelo="./Modelo_Male_200 (1).json"
 rutaPesos="./Pesos_Modelo_Male_200 (1).h5"
 SAMPLE_RATE=22050
@@ -49,7 +48,7 @@ class AudioHandler(object):
     def open_mic_stream( self ):
         device_index = self.find_input_device()
 
-        stream = self.pa.open(  format = pyaudio.paInt16,
+        stream = self.pa.open(  format = pyaudio.paInt64,
                                 channels = 1,
                                 rate = SAMPLE_RATE,
                                 input = True,
