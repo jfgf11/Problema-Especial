@@ -67,7 +67,7 @@ class AudioHandler(object):
         return modelo
 
     def iniciar(self):
-        self.modelo1 = self.cargarModelo(self,rutaModelo, rutaPesos)
+        self.modelo1 = self.cargarModelo(rutaModelo, rutaPesos)
         self.modelo1.compile(loss='sparse_categorical_crossentropy', optimizer="rmsprop",
                         metrics=['sparse_categorical_accuracy'])
 
