@@ -67,9 +67,11 @@ class AudioHandler(object):
         return modelo
 
     def iniciar(self):
+        print('Inicio')
         self.modelo1 = self.cargarModelo(rutaModelo, rutaPesos)
         self.modelo1.compile(loss='sparse_categorical_crossentropy', optimizer="rmsprop",
                         metrics=['sparse_categorical_accuracy'])
+        return self.modelo1
 
     def processBlock(self, audio):
         #print ("Processing started")
