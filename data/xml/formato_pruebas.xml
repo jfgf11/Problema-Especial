@@ -1,0 +1,75 @@
+<root xml_tb_version="3.1" idx="1" type="struct" size="1 1">
+  <events idx="1" type="cell" size="1 33">
+    <item idx="1" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 14">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 16">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">4.81175</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">5.86571875</ENDSECOND>
+    </item>
+    <item idx="2" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 16">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 16">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">9.239875</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">10.19884375</ENDSECOND>
+    </item>
+    <item idx="3" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 14">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 14">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">15.688</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">16.68196875</ENDSECOND>
+    </item>
+    <item idx="4" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 16">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 16">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">21.6440625</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">22.57403125</ENDSECOND>
+    </item>
+    <item idx="5" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 16">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 16">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">27.309125</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">28.40909375</ENDSECOND>
+    </item>
+    <item idx="6" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 14">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 14">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">32.3641875</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">33.11715625</ENDSECOND>
+    </item>
+    <item idx="7" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 17">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 17">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">37.3824375</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">37.700375</ENDSECOND>
+    </item>
+    <item idx="8" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 17">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 17">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">42.5366875</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">42.96365625</ENDSECOND>
+    </item>
+    <item idx="9" type="struct" size="1 1">
+      <PATHNAME idx="1" type="char" size="1 14">????</PATHNAME>
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 14">????</CLASS_NAME>
+      <STARTSECOND idx="1" type="double" size="1 1">47.20175</STARTSECOND>
+      <ENDSECOND idx="1" type="double" size="1 1">48.59571875</ENDSECOND>
+    </item>
+  </events>
+  <background idx="1" type="cell" size="1 1">
+    <item idx="1" type="struct" size="1 1">
+      <CLASS_ID idx="1" type="double" size="1 1">1</CLASS_ID>
+      <CLASS_NAME idx="1" type="char" size="1 10">background</CLASS_NAME>
+      <SUBCLASS idx="1" type="char" size="1 4">cars</SUBCLASS>
+      <PATHNAME idx="1" type="char" size="1 24">background/cars/0041.wav</PATHNAME>
+    </item>
+  </background>
+</root>
