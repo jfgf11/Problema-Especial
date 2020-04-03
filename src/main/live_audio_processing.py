@@ -13,7 +13,7 @@ rutaPesos="./Pesos_Modelo_Male_200 (1).h5"
 SAMPLE_RATE=22050
 window_length_stft = 0.025
 Step_size_stft = 0.010
-ventana_Tiempo_ = 0.050
+ventana_Tiempo_ = 0.2
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 modelo1=None
 
@@ -48,7 +48,7 @@ class AudioHandler(object):
     def open_mic_stream( self ):
         device_index = self.find_input_device()
 
-        stream = self.pa.open(  format = pyaudio.paInt64,
+        stream = self.pa.open(  format = pyaudio.paInt16,
                                 channels = 1,
                                 rate = SAMPLE_RATE,
                                 input = True,
