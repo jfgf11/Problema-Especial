@@ -8,12 +8,12 @@ import time
 import librosa
 from tensorflow.keras.models import model_from_json
 
-rutaModelo="./Modelo_Male_200 (1).json"
-rutaPesos="./Pesos_Modelo_Male_200 (1).h5"
+rutaModelo="./Modelo_Jorge_050.json"
+rutaPesos="./Pesos_Modelo_Jorge_050.h5"
 SAMPLE_RATE=22050
-window_length_stft = 0.025
+window_length_stft = 0.032
 Step_size_stft = 0.010
-ventana_Tiempo_ = 0.2
+ventana_Tiempo_ = 0.05
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 modelo1=None
 
@@ -80,7 +80,7 @@ class AudioHandler(object):
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
         mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE,
-                                    n_mfcc=13)  # ,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
+                                    n_mfcc=13,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
         alto_1, ancho_1 = mfcc.shape
         mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
         print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     audio = AudioHandler()
     run=True
     while (run):
-        print(threading.active_count())
+        #print(threading.active_count())
         audio.listen()
         if threading.active_count()>10:
             run=False
