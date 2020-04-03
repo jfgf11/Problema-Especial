@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import unittest
 from xml.dom import minidom
+from ..main.live_audio_processing import AudioHandler
 
-
+ruta_audio='..'
 def test_find_input_device():
     return 0
-    #return lap.find_input_device()
+    return AudioHandler.find_input_device()
 
 def test_process_block(audio):
-    return [1]
+    return AudioHandler.processBlock()
 
 def leer_audios(ruta_audios):
     doc = minidom.parse(ruta_audios)
@@ -27,11 +28,12 @@ def leer_audios(ruta_audios):
     
     audios=[]
     return audios
-ruta_audios = './audios_test.xml'
+
+ruta_audios = '../../data/audios/00001_00.wav'
 
 class MyTest(unittest.TestCase):
     def test(self):
-        self.assertEqual(test_find_input_device(), 2)
-        audios = leer_audios(ruta_audios)
-        for i in audios:
-            self.assertEqual(test_process_block(),[1])
+        #self.assertEqual(test_find_input_device(), 0)
+        audio = leer_audios(ruta_audios)
+        #for i in audios:
+            #self.assertEqual(test_process_block(),[1])
