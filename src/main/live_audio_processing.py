@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 import pyaudio
 import struct
-import math
 import numpy as np
 #from scipy import signal
-import matplotlib.pyplot as plt
 import threading
 import time
 import librosa
+from tensorflow.keras.models import model_from_json
 
 
-RATE = 22050
-INPUT_BLOCK_TIME = 0.032 # 32 ms
-INPUT_FRAMES_PER_BLOCK = int(RATE * INPUT_BLOCK_TIME)
+rutaModelo=".Modelo_Male_200 (1).json"
+rutaPesos=".Pesos_Modelo_Male_200 (1).h5"
+SAMPLE_RATE=22050
+window_length_stft = 0.025
+Step_size_stft = 0.010
+ventana_Tiempo_ = 0.050
+INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
+modelo1=None
 
 def get_rms(block):
     return np.sqrt(np.mean(np.square(block)))
@@ -21,6 +25,7 @@ class AudioHandler(object):
     def __init__(self):
         self.pa = pyaudio.PyAudio()
         self.stream = self.open_mic_stream()
+        self.modelo1=self.iniciar()
         self.plot_counter = 0
 
     def stop(self):
@@ -46,25 +51,43 @@ class AudioHandler(object):
 
         stream = self.pa.open(  format = pyaudio.paInt16,
                                 channels = 1,
-                                rate = RATE,
+                                rate = SAMPLE_RATE,
                                 input = True,
                                 input_device_index = device_index,
                                 frames_per_buffer = INPUT_FRAMES_PER_BLOCK)
 
         return stream
 
+    def cargarModelo(self,pRutaModelo, pRutaPesos):
+        archivo_json = open(pRutaModelo, 'r')
+        modelo_json = archivo_json.read()
+        archivo_json.close()
+        modelo = model_from_json(modelo_json)
+        modelo.load_weights(pRutaPesos)
+        return modelo
+
+    def iniciar(self):
+        self.modelo1 = self.cargarModelo(self,rutaModelo, rutaPesos)
+        self.modelo1.compile(loss='sparse_categorical_crossentropy', optimizer="rmsprop",
+                        metrics=['sparse_categorical_accuracy'])
+
     def processBlock(self, audio):
-        print ("Processing started")
+        #print ("Processing started")
         start = time.time()
         #f, t, Sxx = signal.spectrogram(audio, RATE)
 
         audio = audio / 1.0
-        ps=librosa.feature.melspectrogram(audio,RATE)
+        #ps=librosa.feature.melspectrogram(audio,RATE)
+
+        mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE,
+                                    n_mfcc=13)  # ,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
+
+        print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
 
         end = time.time()
-        print("Processing finished")
-        print(end - start)
-        if (end-start>0.032):
+        #print("Processing finished")
+        #print(end - start)
+        if (end-start>ventana_Tiempo_):
             print ("Tiempo Superado")
         return
 
