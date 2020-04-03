@@ -48,7 +48,7 @@ class AudioHandler(object):
     def open_mic_stream( self ):
         device_index = self.find_input_device()
 
-        stream = self.pa.open(  format = pyaudio.paInt32,
+        stream = self.pa.open(  format = pyaudio.paInt16,
                                 channels = 1,
                                 rate = SAMPLE_RATE,
                                 input = True,
