@@ -84,6 +84,8 @@ class AudioHandler(object):
         mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE,
                                     n_mfcc=13)  # ,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
 
+        alto_1, ancho_1 = mfcc.shape
+        mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
         print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
 
         end = time.time()
