@@ -73,24 +73,21 @@ class AudioHandler(object):
         return self.modelo1
 
     def processBlock(self, audio):
-        #print ("Processing started")
+        print ("Processing started")
         start = time.time()
         #f, t, Sxx = signal.spectrogram(audio, RATE)
 
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
-        print('shape: ',audio.shape)
-
         mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE,
                                     n_mfcc=13)  # ,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
-
         alto_1, ancho_1 = mfcc.shape
         mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
         print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
 
         end = time.time()
-        #print("Processing finished")
-        #print(end - start)
+        print("Processing finished")
+        print(end - start)
         if (end-start>ventana_Tiempo_):
             print ("Tiempo Superado")
         return
@@ -108,8 +105,9 @@ class AudioHandler(object):
 
         #amplitude = get_rms(audio)
         toProcess=audio
-        x = threading.Thread(target=self.processBlock, args=(toProcess,))
-        x.start()
+        self.processBlock(toProcess)
+        #x = threading.Thread(target=self.processBlock, args=(toProcess,))
+        #x.start()
 
 
 
