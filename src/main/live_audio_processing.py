@@ -68,13 +68,13 @@ class AudioHandler(object):
     def iniciar(self):
         print('Inicio')
         self.modelo1 = self.cargarModelo(rutaModelo, rutaPesos)
-        self.modelo1.compile(loss='sparse_categorical_crossentropy', optimizer="rmsprop",
-                        metrics=['sparse_categorical_accuracy'])
+        #self.modelo1.compile(loss='sparse_categorical_crossentropy', optimizer="rmsprop",
+                        #metrics=['sparse_categorical_accuracy'])
         return self.modelo1
 
     def processBlock(self, audio):
-        print ("Processing started")
-        start = time.time()
+        #print ("Processing started")
+        #start = time.time()
         #f, t, Sxx = signal.spectrogram(audio, RATE)
 
         audio = audio / 1.0
@@ -84,13 +84,14 @@ class AudioHandler(object):
         alto_1, ancho_1 = mfcc.shape
         mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
         print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
+        #print('sin argMax: ',self.modelo1.predict(mfcc))
 
-        end = time.time()
-        print("Processing finished")
-        print(end - start)
-        if (end-start>ventana_Tiempo_):
-            print ("Tiempo Superado")
-        return
+        #end = time.time()
+        #print("Processing finished")
+        #print(end - start)
+        #if (end-start>ventana_Tiempo_):
+            #print ("Tiempo Superado")
+        #return
 
 
     def listen(self):
