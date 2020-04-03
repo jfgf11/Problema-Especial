@@ -9,8 +9,8 @@ import librosa
 from tensorflow.keras.models import model_from_json
 
 
-rutaModelo=".Modelo_Male_200 (1).json"
-rutaPesos=".Pesos_Modelo_Male_200 (1).h5"
+rutaModelo="./Modelo_Male_200 (1).json"
+rutaPesos="./Pesos_Modelo_Male_200 (1).h5"
 SAMPLE_RATE=22050
 window_length_stft = 0.025
 Step_size_stft = 0.010
