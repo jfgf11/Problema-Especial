@@ -8,12 +8,12 @@ import time
 import librosa
 from tensorflow.keras.models import model_from_json
 
-rutaModelo="./Modelo_Jorge_050.json"
-rutaPesos="./Pesos_Modelo_Jorge_050.h5"
+rutaModelo="./Modelo_Casti_100.json"
+rutaPesos="./Pesos_Modelo_Casti_100.h5"
 SAMPLE_RATE=22050
-window_length_stft = 0.032
+window_length_stft = 0.025
 Step_size_stft = 0.010
-ventana_Tiempo_ = 0.05
+ventana_Tiempo_ = 0.100
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 modelo1=None
 
@@ -79,8 +79,9 @@ class AudioHandler(object):
 
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
-        mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE,
-                                    n_mfcc=13,n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
+        mfcc = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,
+                                    n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE))
+
         alto_1, ancho_1 = mfcc.shape
         mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
         print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
@@ -93,7 +94,9 @@ class AudioHandler(object):
             #print ("Tiempo Superado")
         #return
 
-
+    #TODO se ve mas bonito en amarillo
+    #TODO por el TODO :p shtoooo voy as grabar ups apague el parlate soy un huevonsaso jajajaj a lo bien aveces me paso again shtoooo
+    #TODO si detecta super bien el glass break da bien menos en gunshot ahi si medio se jode pero igual Pero los ruidos de fondo los toma como gritos
     def listen(self):
         try:
             raw_block = self.stream.read(INPUT_FRAMES_PER_BLOCK, exception_on_overflow = False)
