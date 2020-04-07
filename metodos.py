@@ -4,20 +4,75 @@ import psutil
 
 import tensorflow.compat.v1 as tf
 
+import matplotlib.pyplot as plt
+
+# Tensor Flow
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.layers import MaxPooling1D
+from tensorflow.keras.layers import AveragePooling1D
+from tensorflow.keras.layers import GlobalAveragePooling1D
+from tensorflow.keras.layers import GlobalMaxPooling1D
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import AveragePooling2D
+from tensorflow.keras.layers import GlobalAveragePooling2D
+from tensorflow.keras.layers import GlobalMaxPooling2D
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import concatenate
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Reshape
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Activation
+from tensorflow.keras import optimizers
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras.models import Model
+from tensorflow.keras.utils import model_to_dot
+from tensorflow.keras.utils import plot_model
+from IPython.display import SVG
 
 # Recopilacion de datos
 import xml.dom.minidom
+from scipy.io import wavfile
 import numpy as np
+
+# Para el preprocesamiento
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
+from sklearn import preprocessing
+from collections import Counter
 
 import librosa
 import progressbar
 
 # Import libraries
 import librosa.display
+from matplotlib.pyplot import specgram
+import pandas as pd
+import glob
+from sklearn.metrics import confusion_matrix
+import IPython.display as ipd  # To play sound in the notebook
+import os
+import sys
+import warnings
+from scipy import signal
+from scipy.fft import fftshift
 
 #Redes neuronales sklearn
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import plot_confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 from scipy import stats
-from sklearn.model_selection import train_test_split
+
+from sklearn.utils.class_weight import compute_class_weight
 
 tf.disable_v2_behavior()
 
@@ -323,7 +378,31 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
         datos_y_totales = None
         x2 = None
 
-    return z, fs
+    return z
+
+'''''
+Guardar y cargar modelo.
+'''
+
+def guardarModelo(pModelo, pRutaModelo, pRutaPesos, pRutaDiagrama):
+  modelo_json = pModelo.to_json()
+
+  with open(pRutaModelo, "w") as archivo_json:
+      archivo_json.write(modelo_json)
+
+  pModelo.save_weights(pRutaPesos)
+
+  plot_model(pModelo, to_file = pRutaDiagrama, show_shapes = True)
+
+def cargarModelo(pRutaModelo, pRutaPesos):
+  archivo_json = open(pRutaModelo, 'r')
+  modelo_json = archivo_json.read()
+  archivo_json.close()
+  modelo = model_from_json(modelo_json)
+
+  modelo.load_weights(pRutaPesos)
+
+  return modelo
 
 '''''
 Extraccion de datos juardados y union de ellos.
@@ -331,44 +410,62 @@ Preprocesamiento de los datos
 '''
 
 def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Final_pNXML,Inicial_nAudios,Final_nAudios,
-         ventana_Tiempo,sample_rate,nombre,Sin_Background,Solo_Background,):
+         ventana_Tiempo,sample_rate,nombre,Sin_Background,Solo_Background,MFCC,Espectogram):
+
+    numero_magico = 1350000000  # Depende de la ram del computador 1.35G es maso unas 64GB de ram en el peor caso :v
+    NMV = round(ventana_Tiempo * sample_rate)  # Numero de muestras por ventana
+
     if variable=='x':
         print('mk no, el pc no da, no lo intentes we')
+
     elif variable=='y':
 
-        y = []
-
-        yTotal = []
+        print('guardando y')
+        y_def = np.zeros(int(numero_magico / NMV))
+        anterior=0
         for i in range(z):
             ruta = dar_ruta(rutaDatosParciales, Features, 'y_' + str(i) + '_', Inicial_pNXML, Final_pNXML,
                 Inicial_nAudios, Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
                 False, False)
             y = np.load(ruta + '.npy')
-            yTotal.concatenate(y)
+            print('cargo archivo ',i)
+
+            y_def[anterior:anterior+y.size] = y
+            anterior+=y.size
         ruta = dar_ruta(ruta_resultados, Features, 'y_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
             Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
             False, False)
-        np.save(ruta, y)
+        y_def=y_def[0:anterior]
+        np.save(ruta, y_def)
         y = None
-        yTotal=None
+        y_def=None
 
     elif variable=='x2':
 
-        x2 = []
+        print('guardando x2')
 
-        x2Total = []
+        x2_def=None
+        anterior = 0
         for i in range(z):
             ruta = dar_ruta(rutaDatosParciales, Features, 'x2_' + str(i) + '_', Inicial_pNXML, Final_pNXML,
                             Inicial_nAudios, Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background,
                             Solo_Background,
-                            False, False)
-            y = np.load(ruta + '.npy')
-            x2Total.concatenate(y)
+                            Espectogram, MFCC)
+            x2 = np.load(ruta + '.npy')
+            print('cargo archivo ', i)
+            if i==0:
+                x2_def = np.zeros(x2.size*z)
+            x2_def[anterior:anterior + x2.size]
+            anterior += x2.size
         ruta = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
                         Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                        False, False)
-        np.save(ruta, y)
-        y = None
+                        Espectogram, MFCC)
+        x2_def = x2_def[0:anterior]
+        np.save(ruta, x2_def)
+        x2 = None
+        x2_def = None
+
+    print('----- Guardado -----')
 
 def datosRed2D():
     ruta = dar_ruta()
@@ -384,3 +481,126 @@ def datosRed2D():
     Numero_Datos, alto_2, ancho_2 = x_train_2.shape
     x_train_2 = np.reshape(x_train_2, (-1, 1, alto_2, ancho_2), 'F')
     x_test_2 = np.reshape(x_test_2, (-1, 1, alto_2, ancho_2), 'F')
+
+    pesosClases = compute_class_weight(class_weight='balanced', classes=np.array([0, 1, 2, 3]), y=y_train)
+    PesosClases = {0: pesosClases[0] * 0.0001,
+                   1: pesosClases[1] + 10,
+                   2: pesosClases[2] + 10,
+                   3: pesosClases[3] + 30}
+    return x_train_2,y_train, x_test_2, y_test, PesosClases
+
+'''''
+Creacion y entrenamiento modelo red 2D 
+'''
+
+def crearModelo2D(pTasa, pAlpha, pNumFiltros, pTamFiltros, pTamPooling, pNumNeuronas, pOptimizer, T_entrada_1,
+                  T_entrada_2):
+    modelo = Sequential()
+
+    modelo.add(Input(shape=(1, T_entrada_1, T_entrada_2)))
+
+    modelo.add(Conv2D(pNumFiltros[0], (int(pTamFiltros[0]), int(pTamFiltros[0])), padding='same', activation='relu'))
+    modelo.add(Conv2D(pNumFiltros[1], (int(pTamFiltros[1]), int(pTamFiltros[1])), padding='same', activation='relu'))
+    modelo.add(Conv2D(pNumFiltros[2], (int(pTamFiltros[2]), int(pTamFiltros[2])), padding='same', activation='relu'))
+    modelo.add(Conv2D(pNumFiltros[3], (int(pTamFiltros[3]), int(pTamFiltros[3])), padding='same', activation='relu'))
+    # modelo.add(Conv2D(pNumFiltros[4], (int(pTamFiltros[4]),int(pTamFiltros[4])), padding='same', activation = 'relu'))
+    # modelo.add(Conv2D(pNumFiltros[5], (int(pTamFiltros[5]),int(pTamFiltros[5])), padding='same', activation = 'relu'))
+
+    modelo.add(MaxPooling2D((int(pTamFiltros[1]), int(pTamFiltros[1])), padding='same'))
+
+    modelo.add(Dropout(0.5))
+    modelo.add(Flatten())
+
+    modelo.add(Dense(pNumNeuronas[0], activation='relu'))
+    modelo.add(Dense(pNumNeuronas[1], activation='relu'))
+    modelo.add(Dense(pNumNeuronas[2], activation='relu'))
+    # modelo.add(Dense(pNumNeuronas[3], activation='relu'))
+
+    modelo.add(Dense(4, activation='softmax'))
+
+    sgd = optimizers.SGD(lr=pTasa)  # , momentum=0.9)
+    adam = optimizers.Adam(learning_rate=pTasa)
+    if pOptimizer == "adam":
+        opt = adam
+    elif pOptimizer == "sgd":
+        opt = sgd
+    elif pOptimizer == "rmsprop":
+        opt = "rmsprop"
+
+    modelo.compile(loss='sparse_categorical_crossentropy', optimizer=opt, metrics=['sparse_categorical_accuracy'])
+    modelo.summary()
+
+    return modelo
+
+def crear_red_2d():
+    # Esta celda construye los modelos, a partir de los parametros especificados por cada una de las siguientes variables.
+    # Es el numero de filtros que cada capa convolucional utiliza.
+    numFiltros = np.array([12, 20, 20, 12, 10, 512])
+
+    # Es el tamaño de los filtros utilizados en cada capa convolucional.
+    tamFiltros = np.array([3, 3, 3, 3, 3, 5])
+
+    # Es el tamaño de cada capa de Pooling.
+    tamPooling = np.array([4, 2, 3, 3, 3, 3])
+
+    # Es el numero de neuronas en cada capa de la red neuronal que sigue despues de la parte convolucional.
+    numNeuronas = np.array([10, 10, 10, 16])
+
+    # Es el tipo de optimizador a utilizar.
+    # Se pueden especificar: "sgd", "adam" o "rmsprop"
+    optimizer = "rmsprop"
+
+    # Es la tasa de aprendizaje del optimizador.
+    tasa = 0.1
+
+    # Es el parametro de regularizacion a utilizar.
+    alpha = 0.01
+
+    x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D()
+
+    y_train=None
+    x_test_2=None
+    y_test=None
+    pesos = None
+
+    Numero_Datos, uno, alto_2, ancho_2 = x_train_2.shape
+
+    modelo2 = crearModelo2D(tasa, alpha, numFiltros, tamFiltros, tamPooling, numNeuronas, optimizer, T_entrada_1=alto_2,
+                            T_entrada_2=ancho_2)
+
+    # Esta linea muestra un diagrama de la red neuronal.
+    SVG(model_to_dot(modelo2, show_shapes=True, expand_nested=True, dpi=50).create(prog='dot', format='svg'))
+
+
+def entrenarRed(modelo):
+    epocas = 100
+    batchSize = 5000
+    x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D()
+    # modelo1.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
+
+    for i in range(0, 1):
+        # hist = modelo1.fit(x, y, verbose = 1, validation_data=(x, y), epochs = epocas, batch_size = batchSize)#, class_weight = pesosClases)
+        hist = modelo.fit(x_train_2, y_train, validation_data=(x_test_2, y_test), epochs=epocas, batch_size=batchSize,
+                           class_weight=pesos)
+
+
+''''
+Visualización de resultados
+'''
+
+def graficarMatrizConfusion(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    plt.figure(figsize=(8, 8))
+
+    ax = sns.heatmap(cm, annot=True, cbar=False);
+
+    ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top')
+
+    plt.xlabel("Clase Prediccion")
+    plt.ylabel("Clase Verdadera")
+    plt.title("Matriz de Confusion")
+
+    plt.show()
