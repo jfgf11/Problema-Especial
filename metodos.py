@@ -561,11 +561,6 @@ def crear_red_2d(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_
                         Espectogram, MFCC)
     x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D(rutax2, rutay)
 
-    y_train=None
-    x_test_2=None
-    y_test=None
-    pesos = None
-
     Numero_Datos, uno, alto_2, ancho_2 = x_train_2.shape
 
     modelo2 = crearModelo2D(tasa, alpha, numFiltros, tamFiltros, tamPooling, numNeuronas, optimizer, T_entrada_1=alto_2,
@@ -573,24 +568,17 @@ def crear_red_2d(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_
 
     # Esta linea muestra un diagrama de la red neuronal.
     #SVG(model_to_dot(modelo2, show_shapes=True, expand_nested=True, dpi=50).create(prog='dot', format='svg'))
-    rutaModelo='./drive/modelos/Modelo_Casti_'+numero+'.json'
-    rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_'+numero+'.h5'
-    rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti_'+numero+'.png'
-    guardarModelo(modelo2, rutaModelo, rutaPesos, rutaDiagrama)
+    #guardarModelo(modelo2, rutaModelo, rutaPesos, rutaDiagrama)
+    return x_train_2,y_train,x_test_2,y_test,pesos, modelo2
 
-def entrenarRed(modelo,ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_nAudios,Final_nAudios,
-            ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background, MFCC, Espectogram):
+def entrenarRed(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_nAudios,Final_nAudios,
+            ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background, MFCC, Espectogram,numero):
     epocas = 30
     batchSize = 5000
 
-    rutay = dar_ruta(ruta_resultados, Features, 'y_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
-                     Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                     False, False)
-    rutax2 = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
-                      Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                      Espectogram, MFCC)
-    x_train_2, y_train, x_test_2, y_test, pesos = datosRed2D(rutax2, rutay)
-    modelo.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
+    x_train_2, y_train, x_test_2, y_test, pesos,modelo = crear_red_2d(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_nAudios,Final_nAudios,
+            ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background, MFCC, Espectogram,numero)
+    #modelo.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
 
     for i in range(0, 1):
         # hist = modelo1.fit(x, y, verbose = 1, validation_data=(x, y), epochs = epocas, batch_size = batchSize)#, class_weight = pesosClases)
@@ -604,6 +592,21 @@ def entrenarRed(modelo,ruta_resultados, Features, Inicial_pNXML, Final_pNXML, In
     rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
     rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti' + numero + '.png'
     guardarModelo(modelo, rutaModelo, rutaPesos, rutaDiagrama)
+
+def entrenarRed2(modelo):
+    epocas = 30
+    batchSize = 5000
+    rutay = './drive/Datos_Procesados/datos_raw_conv/y_1-10_XML_0-7_Audios_100s_11025_Casti_'
+    rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_1-10_XML_0-7_Audios_100s_11025_Casti_Spectopgram'
+    x_train_2, y_train, x_test_2, y_test, pesos = datosRed2D(rutax2,rutay)
+    modelo.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
+
+    for i in range(0, 1):
+        # hist = modelo1.fit(x, y, verbose = 1, validation_data=(x, y), epochs = epocas, batch_size = batchSize)#, class_weight = pesosClases)
+        hist = modelo.fit(x_train_2, y_train, validation_data=(x_test_2, y_test), epochs=epocas, batch_size=batchSize,
+                           class_weight=pesos)
+
+    graficarMatrizConfusion(y_test,modelo.predict_classes(x_test_2))
 
 ''''
 Visualización de resultados
