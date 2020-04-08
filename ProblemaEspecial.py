@@ -1,15 +1,15 @@
-
 from metodos import *
+
 while True:
     print('Menu para seleccionar la accion a ejecutar')
     print('-------------------------------------------')
     print('1. Descargar Audios y xml de google drive.')
     print('2. Sacar x, x2 y y')
     print('3. Descargar modelo de Drive')
-    print('4. Unir x')
+    print('4. guardar modelo')
     print('5. Unir y')
     print('6. Unir x2')
-    print('7. Entrenar RED 1D')
+    print('7. Crear RED 2D')
     print('8. Entrenar RED 2D')
     print('9. Salir')
     print('-------------------------------------------')
@@ -32,7 +32,7 @@ while True:
 
     ventana_Tiempo_ = 0.100  # La ventana de tiempo de cada muestra (XX_ms)
     salto_de_ventana_ = 4  # Corrimiento en tiempo (XXms/4)
-    sample_rate_ = 22050  # Tasa remuestreo
+    sample_rate_ = 11025  # Tasa remuestreo
     # Si se está obteniendo el espectogramo, el valor de la ventana no puede ser menor a 0.025s
     # Si se está obteniendo el MFCC, el valor de la ventana no puede ser menor a 0.03125s
     window_length_stft_ = 0.025  # Ventana de tiempo para la short-Time Fourier Transform
@@ -56,7 +56,7 @@ while True:
     # Si ambos son True, se obtendrá únicamente el espectogram
     Espectogram_ = True  # Calcular el espectograma
     MFCC_ = False  # Calcular el MFCC
-
+    numero = '11025_100ms_Spectogram'
 
     if opcion==1:
         guardarLocal_ = True
@@ -92,24 +92,33 @@ while True:
         guardarLocalmente(nombreModelo, ruta)
 
     elif opcion==4:
-        z=2 # Corresponde al numero de archivos que se hayan guardado en los datos parciales.
-        join('x',z,rutaDatosParciales_,ruta_resultados,Features_,Inicial_pNXML_,Final_pNXML_,Inicial_nAudios_,Final_nAudios_,
-            ventana_Tiempo_,sample_rate_,nombre_,Sin_Background_,Solo_Background_,MFCC_,Espectogram_)
+        rutaModelo = './drive/modelos/Modelo_Casti_' + numero + '.json'
+        rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
+        rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti_' + numero + '.png'
+        modelo=cargarModelo(rutaModelo, rutaPesos)
+        guardarModelo(modelo, rutaModelo, rutaPesos, rutaDiagrama)
 
     elif opcion==5:
-        z = 2  # Corresponde al numero de archivos que se hayan guardado en los datos parciales.
+        print('Ingrese el numero de archivos que va a unir:')
+        z=int(input())
         join('y', z, rutaDatosParciales_, ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
             Final_nAudios_,
             ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_)
     elif opcion==6:
-        z = 2  # Corresponde al numero de archivos que se hayan guardado en los datos parciales.
+        print('Ingrese el numero de archivos que va a unir:')
+        z = int(input())
         join('x2', z, rutaDatosParciales_, ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
             Final_nAudios_,
             ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_)
     elif opcion==7:
-        print('we entrena en collab a menos que tengas mas de 24 Gb de ram.')
+        crear_red_2d(ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_, Final_nAudios_,
+                     ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_,numero)
     elif opcion==8:
-        crear_red_2d()
+        rutaModelo = './drive/modelos/Modelo_Casti_' + numero + '.json'
+        rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
+        modelo=cargarModelo(rutaModelo, rutaPesos)
+        entrenarRed(modelo,ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_, Final_nAudios_,
+                     ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_)
     elif opcion==9:
         break
     else:

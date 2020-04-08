@@ -156,7 +156,7 @@ def dar_ruta(carpeta, features, str_variable, Inicial_pNXML, Final_pNXML, Inicia
         Features_or_raw = "_features/"
     else:
         Features_or_raw = "_raw_conv/"
-    ventana_Tiempo_String_ = str(ventana_Tiempo).split('.')[1]
+    ventana_Tiempo_String_ = '100'
     sample_rate_String = str(sample_rate)
     if Sin_Background:
         Back = "_SIN_BACK"
@@ -216,20 +216,18 @@ def Crear_Datos_MFCC_o_Espectogram(pX, sr_, window_length_stft, Step_size_stft, 
     x_2 = x_2[0:-1, :]
     return x_2
 
+
 def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nAudios,
                    ventana_Tiempo=0.1, salto_de_ventana=4, Calcular_Features=False, Sin_Background=False,
                    rutaDatosXML="./drive/xml/", rutaDatosParciales="./drive/parciales/",
                    rutaDatosSounds="./drive/sounds/", Solo_Background=False,
                    sample_rate=22050, window_length_stft=0.032, Step_size_stft=0.01,
                    guardarLocal=False, MFCC=False, Espectogram=False):
-    fs=0
+
     NMV = round(ventana_Tiempo * sample_rate)  # Numero de muestras por ventana
-    window = np.hamming(NMV)  # se crea la ventana de hamming
     numero_magico = 1350000000  # Depende de la ram del computador 1.35G es maso unas 64GB de ram en el peor caso :v
     z = 0  # Indica si los datos se guardaron en uno o varios archivos. si z se queda en 0 solo se guardo un archivo.
-    if guardarLocal:
-        datos_x_totales, dato_x2_totales, datos_y_totales = [0], [0], [0]
-    else:
+    if not guardarLocal:
         NMV = round(ventana_Tiempo * sample_rate)  # Numero de muestras por ventana
         NMV_advance = round(NMV / salto_de_ventana)  # Numero de muestras por las cuales se avanza
         if Calcular_Features:
@@ -254,13 +252,10 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
                 guardarLocalmente(archivo_xml, rutaDatosXML)
             else:
                 doc = xml.dom.minidom.parse(rutaDatosXML + archivo_xml)
-                start = doc.getElementsByTagName(
-                    "STARTSECOND")  # Vector que contiene el tiempo en segundos de inicio de todos los eventos
-                finish = doc.getElementsByTagName(
-                    "ENDSECOND")  # Vector que contiene el tiempo en segundos de finalizacion de todos los eventos
+                start = doc.getElementsByTagName("STARTSECOND")  # Vector que contiene el tiempo en segundos de inicio de todos los eventos
+                finish = doc.getElementsByTagName("ENDSECOND")  # Vector que contiene el tiempo en segundos de finalizacion de todos los eventos
                 ID = doc.getElementsByTagName("CLASS_ID")  # Vector que contiene la etiqueta de cada uno de los eventos
-                events = doc.getElementsByTagName(
-                    "events")  # Indica informacion de todos los eventos en un archivo xml (tamaño)
+                events = doc.getElementsByTagName("events")  # Indica informacion de todos los eventos en un archivo xml (tamaño)
                 a, b, c, d = (events[0].attributes["size"].value)  # Se obtiene el numero de eventos en un audio
                 nEventos = int(c + d)  # numero de eventos en un audio
 
@@ -275,24 +270,17 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
                 if guardarLocal:
                     guardarLocalmente(archivo_audio, rutaDatosSounds)
                 else:
-                    frameData, fs = librosa.load(rutaDatosSounds + archivo_audio, sr=sample_rate,
-                                                 res_type='kaiser_fast')  # Audio seleccionado
-                    datos_x = (librosa.util.frame(frameData, frame_length=NMV,
-                                                  hop_length=NMV_advance)).T  # Reorganiza los datos dándole saltos de tiempo de NMV_advance y el número de muestras por ventana NMV
-                    datos_y = np.zeros(len(
-                        frameData))  # Etiquetas de cada uno de los datos, los datos no asignados serán 0 y corresponderan a sonido ambiente
+                    frameData, fs = librosa.load(rutaDatosSounds + archivo_audio, sr=sample_rate, res_type='kaiser_fast')  # Audio seleccionado
+                    datos_x = (librosa.util.frame(frameData, frame_length=NMV, hop_length=NMV_advance)).T  # Reorganiza los datos dándole saltos de tiempo de NMV_advance y el número de muestras por ventana NMV
+                    datos_y = np.zeros(len(frameData))  # Etiquetas de cada uno de los datos, los datos no asignados serán 0 y corresponderan a sonido ambiente
 
                     for j in range(0, nEventos):  # Se recorre el numero de eventos para cada xml
-                        startFrame = float(
-                            str(start[j].firstChild.data)) * fs  # Posicion inicial de evento con respecto a frameData
-                        endFrame = float(
-                            str(finish[j].firstChild.data)) * fs  # Posicion final de evento con respecto a frameData
+                        startFrame = float(str(start[j].firstChild.data)) * fs  # Posicion inicial de evento con respecto a frameData
+                        endFrame = float(str(finish[j].firstChild.data)) * fs  # Posicion final de evento con respecto a frameData
                         label = ID[j].firstChild.data  # etiqueta del evento
-                        datos_y[round(startFrame):round(endFrame)] = int(
-                            label)  # Se asigna la etiqueta a cada uno de los datos recopilados
+                        datos_y[round(startFrame):round(endFrame)] = int(label)  # Se asigna la etiqueta a cada uno de los datos recopilados
 
-                    datos_y = (((stats.mode(librosa.util.frame(datos_y, frame_length=NMV, hop_length=NMV_advance)))[
-                        0]).T)  # Con esto se asigna la etiqueta a datos desplazados en el tiempo
+                    datos_y = (((stats.mode(librosa.util.frame(datos_y, frame_length=NMV, hop_length=NMV_advance)))[0]).T)  # Con esto se asigna la etiqueta a datos desplazados en el tiempo
                     datos_y = np.reshape(datos_y, (-1), 'F')
 
                     if Sin_Background:  # Si se quieren datos sin background
@@ -306,25 +294,28 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
                     longitud_siguiente = longitud_actual + len(datos_y)
                     datos_x_totales[longitud_actual:longitud_siguiente, :] = datos_x
                     datos_y_totales[longitud_actual:longitud_siguiente] = datos_y
+
                     if monitoreo_ram():  # continua ejecucion normal si hay ram suficiente
                         longitud_actual = longitud_siguiente
                     else:  # Se va a acabar la memoria guarda los resultados parciales
                         datos_x_totales = datos_x_totales[0:longitud_siguiente, :]
-                        datos_x_totales = datos_x_totales * window  # Se pasa cada uno de los datos por una ventana de hamming
+                        #datos_x_totales = datos_x_totales * window  # Se pasa cada uno de los datos por una ventana de hamming
                         datos_y_totales = datos_y_totales[0:longitud_siguiente]
                         datos_y_totales[datos_y_totales == 4] = 1
-                        ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'x_' + str(z) + '_', Inicial_pNXML,
-                                        Final_pNXML, Inicial_nAudios,
-                                        Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background,
-                                        Solo_Background,
-                                        False, False)
-                        np.save(ruta, datos_x_totales)
+                        #ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'x_' + str(z) + '_', Inicial_pNXML,
+                        #                Final_pNXML, Inicial_nAudios,
+                        #                Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background,
+                        #                Solo_Background,
+                        #                False, False)
+                        #np.save(ruta, datos_x_totales)
                         ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'y_' + str(z) + '_', Inicial_pNXML,
                                         Final_pNXML, Inicial_nAudios,
                                         Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background,
                                         Solo_Background,
                                         False, False)
                         np.save(ruta, datos_y_totales)
+
+                        datos_y_totales = np.zeros(int(numero_magico / NMV))
 
                         if MFCC or Espectogram:  # Se crea el Spectogram para cada dato
                             x2 = Crear_Datos_MFCC_o_Espectogram(datos_x_totales, fs, window_length_stft,
@@ -342,31 +333,31 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
                             datos_x_totales = np.zeros((1, 312))
                         else:
                             datos_x_totales = np.zeros((int(numero_magico / NMV), NMV))
-                        datos_y_totales = np.zeros(int(numero_magico / NMV))
 
                 contador += 1
                 bar.update(contador)  # Se actualiza la barra de progreso
 
     if not guardarLocal:
         datos_x_totales = datos_x_totales[0:longitud_siguiente, :]
-        datos_x_totales = datos_x_totales * window  # Se pasa cada uno de los datos por una ventana de hamming
+        #datos_x_totales = datos_x_totales * window  # Se pasa cada uno de los datos por una ventana de hamming
         datos_y_totales = datos_y_totales[0:longitud_siguiente]
         datos_y_totales[datos_y_totales == 4] = 1
 
-        ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'x_' + str(z) + '_', Inicial_pNXML, Final_pNXML,
-                        Inicial_nAudios,
-                        Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                        False, False)
-        np.save(ruta, datos_x_totales)
+        #ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'x_' + str(z) + '_', Inicial_pNXML, Final_pNXML,
+        #                Inicial_nAudios,
+        #                Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+        #                False, False)
+        #np.save(ruta, datos_x_totales)
         ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'y_' + str(z) + '_', Inicial_pNXML, Final_pNXML,
-                        Inicial_nAudios,
-                        Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                        False, False)
+            Inicial_nAudios,Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+            False, False)
         np.save(ruta, datos_y_totales)
+
+        datos_y_totales = None
 
         if MFCC or Espectogram:  # Se crea el Spectogram para cada dato
             x2 = Crear_Datos_MFCC_o_Espectogram(datos_x_totales, fs, window_length_stft,
-                                                Step_size_stft, MFCC, Espectogram, ventana_Tiempo)
+                    Step_size_stft, MFCC, Espectogram, ventana_Tiempo)
             ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'x2_'+ str(z) + '_', Inicial_pNXML, Final_pNXML,
                             Inicial_nAudios,Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background,
                             Solo_Background, Espectogram, MFCC)
@@ -375,7 +366,6 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
         z += 1
         longitud_actual = 0
         datos_x_totales = None
-        datos_y_totales = None
         x2 = None
 
     return z
@@ -429,6 +419,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
                 False, False)
             y = np.load(ruta + '.npy')
             print('cargo archivo ',i)
+            print(y.shape)
 
             y_def[anterior:anterior+y.size] = y
             anterior+=y.size
@@ -437,6 +428,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
             False, False)
         y_def=y_def[0:anterior]
         np.save(ruta, y_def)
+        print(y_def.shape)
         y = None
         y_def=None
 
@@ -452,31 +444,35 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
                             Solo_Background,
                             Espectogram, MFCC)
             x2 = np.load(ruta + '.npy')
-            print('cargo archivo ', i)
+            print(x2.shape)
             if i==0:
-                x2_def = np.zeros(x2.size*z)
-            x2_def[anterior:anterior + x2.size]
-            anterior += x2.size
+                x2_def = np.zeros([x2.shape[0]*z,x2.shape[1],x2.shape[2]])
+                x2_def[anterior:anterior + x2.shape[0],:,:]=x2
+            anterior += x2.shape[0]
         ruta = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
                         Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
                         Espectogram, MFCC)
-        x2_def = x2_def[0:anterior]
+        print(anterior)
+        x2_def = x2_def[0:anterior,:,:]
         np.save(ruta, x2_def)
+        print(x2_def.shape)
         x2 = None
         x2_def = None
 
     print('----- Guardado -----')
 
-def datosRed2D():
-    ruta = dar_ruta()
-    Nombre = ''
-    y = np.load(ruta + Nombre + ".npy")
-    ruta = dar_ruta()
-    x2 = np.load(ruta + Nombre + ".npy")
+def datosRed2D(rutax2,rutay):
 
+    y=None
+    x2=None
+
+    y = np.load(rutay + ".npy")
+    x2 = np.load(rutax2 + ".npy")
+    print(rutay)
+    print(rutax2)
     x_train_2, x_test_2, y_train, y_test = train_test_split(x2, y, random_state=0, test_size=0.20)
-    x2 = []
-    y = []
+    x2 = None
+    y = None
 
     Numero_Datos, alto_2, ancho_2 = x_train_2.shape
     x_train_2 = np.reshape(x_train_2, (-1, 1, alto_2, ancho_2), 'F')
@@ -532,7 +528,8 @@ def crearModelo2D(pTasa, pAlpha, pNumFiltros, pTamFiltros, pTamPooling, pNumNeur
 
     return modelo
 
-def crear_red_2d():
+def crear_red_2d(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_nAudios,Final_nAudios,
+            ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background, MFCC, Espectogram,numero):
     # Esta celda construye los modelos, a partir de los parametros especificados por cada una de las siguientes variables.
     # Es el numero de filtros que cada capa convolucional utiliza.
     numFiltros = np.array([12, 20, 20, 12, 10, 512])
@@ -556,7 +553,13 @@ def crear_red_2d():
     # Es el parametro de regularizacion a utilizar.
     alpha = 0.01
 
-    x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D()
+    rutay=dar_ruta(ruta_resultados, Features, 'y_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
+            Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+            False, False)
+    rutax2 = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
+                        Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+                        Espectogram, MFCC)
+    x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D(rutax2, rutay)
 
     y_train=None
     x_test_2=None
@@ -569,20 +572,38 @@ def crear_red_2d():
                             T_entrada_2=ancho_2)
 
     # Esta linea muestra un diagrama de la red neuronal.
-    SVG(model_to_dot(modelo2, show_shapes=True, expand_nested=True, dpi=50).create(prog='dot', format='svg'))
+    #SVG(model_to_dot(modelo2, show_shapes=True, expand_nested=True, dpi=50).create(prog='dot', format='svg'))
+    rutaModelo='./drive/modelos/Modelo_Casti_'+numero+'.json'
+    rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_'+numero+'.h5'
+    rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti_'+numero+'.png'
+    guardarModelo(modelo2, rutaModelo, rutaPesos, rutaDiagrama)
 
-
-def entrenarRed(modelo):
-    epocas = 100
+def entrenarRed(modelo,ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_nAudios,Final_nAudios,
+            ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background, MFCC, Espectogram):
+    epocas = 30
     batchSize = 5000
-    x_train_2,y_train,x_test_2,y_test,pesos=datosRed2D()
-    # modelo1.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
+
+    rutay = dar_ruta(ruta_resultados, Features, 'y_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
+                     Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+                     False, False)
+    rutax2 = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
+                      Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
+                      Espectogram, MFCC)
+    x_train_2, y_train, x_test_2, y_test, pesos = datosRed2D(rutax2, rutay)
+    modelo.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
 
     for i in range(0, 1):
         # hist = modelo1.fit(x, y, verbose = 1, validation_data=(x, y), epochs = epocas, batch_size = batchSize)#, class_weight = pesosClases)
         hist = modelo.fit(x_train_2, y_train, validation_data=(x_test_2, y_test), epochs=epocas, batch_size=batchSize,
                            class_weight=pesos)
 
+    graficarMatrizConfusion(y_test,modelo.predict_classes(x_test_2))
+
+    numero = '100'
+    rutaModelo = './drive/modelos/Modelo_Casti' + numero + '.json'
+    rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
+    rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti' + numero + '.png'
+    guardarModelo(modelo, rutaModelo, rutaPesos, rutaDiagrama)
 
 ''''
 Visualización de resultados
