@@ -350,7 +350,7 @@ def ObtenerSonidos(nombre, Inicial_pNXML, Final_pNXML, Inicial_nAudios, Final_nA
         #np.save(ruta, datos_x_totales)
         ruta = dar_ruta(rutaDatosParciales, Calcular_Features, 'y_' + str(z) + '_', Inicial_pNXML, Final_pNXML,
             Inicial_nAudios,Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-            False, False)
+            Espectogram, MFCC)
         np.save(ruta, datos_y_totales)
 
         datos_y_totales = None
@@ -416,7 +416,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
         for i in range(z):
             ruta = dar_ruta(rutaDatosParciales, Features, 'y_' + str(i) + '_', Inicial_pNXML, Final_pNXML,
                 Inicial_nAudios, Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-                False, False)
+                Espectogram, MFCC)
             y = np.load(ruta + '.npy')
             print('cargo archivo ',i)
             print(y.shape)
@@ -425,7 +425,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
             anterior+=y.size
         ruta = dar_ruta(ruta_resultados, Features, 'y_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
             Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
-            False, False)
+            Espectogram, MFCC)
         y_def=y_def[0:anterior]
         np.save(ruta, y_def)
         print(y_def.shape)
@@ -587,32 +587,38 @@ def entrenarRed(ruta_resultados, Features, Inicial_pNXML, Final_pNXML, Inicial_n
 
     graficarMatrizConfusion(y_test,modelo.predict_classes(x_test_2))
 
+    if Espectogram:
+        Esp_o_Mfcc = "Spectopgram"
+    elif MFCC:
+        Esp_o_Mfcc = "MFCC"
+    else:
+        Esp_o_Mfcc = ""
+    titulo=nombre+'_'+str(sample_rate)+'_'+ Esp_o_Mfcc
     numero = '100'
     rutaModelo = './drive/modelos/Modelo_Casti' + numero + '.json'
     rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
     rutaDiagrama = './drive/modelos/diagrama/Diagrama_Modelo_Casti' + numero + '.png'
-    guardarModelo(modelo, rutaModelo, rutaPesos, rutaDiagrama)
+    guardarModelo(modelo, rutaModelo, rutaPesos, rutaDiagrama,titulo)
 
-def entrenarRed2(modelo):
+def entrenarRed2(modelo,titulo,rutax2,rutay):
     epocas = 30
     batchSize = 5000
-    rutay = './drive/Datos_Procesados/datos_raw_conv/y_1-10_XML_0-7_Audios_100s_11025_Casti_'
-    rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_1-10_XML_0-7_Audios_100s_11025_Casti_Spectopgram'
+
     x_train_2, y_train, x_test_2, y_test, pesos = datosRed2D(rutax2,rutay)
     modelo.compile(loss='sparse_categorical_crossentropy', optimizer = "rmsprop", metrics = ['sparse_categorical_accuracy'])
 
-    for i in range(0, 1):
+    #for i in range(0, 1):
         # hist = modelo1.fit(x, y, verbose = 1, validation_data=(x, y), epochs = epocas, batch_size = batchSize)#, class_weight = pesosClases)
-        hist = modelo.fit(x_train_2, y_train, validation_data=(x_test_2, y_test), epochs=epocas, batch_size=batchSize,
-                           class_weight=pesos)
+     #   hist = modelo.fit(x_train_2, y_train, validation_data=(x_test_2, y_test), epochs=epocas, batch_size=batchSize,
+      #                     class_weight=pesos)
 
-    graficarMatrizConfusion(y_test,modelo.predict_classes(x_test_2))
+    graficarMatrizConfusion(y_test,modelo.predict_classes(x_test_2),titulo)
 
 ''''
 Visualización de resultados
 '''
 
-def graficarMatrizConfusion(y_true, y_pred):
+def graficarMatrizConfusion(y_true, y_pred,titulo):
     cm = confusion_matrix(y_true, y_pred)
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
@@ -625,6 +631,6 @@ def graficarMatrizConfusion(y_true, y_pred):
 
     plt.xlabel("Clase Prediccion")
     plt.ylabel("Clase Verdadera")
-    plt.title("Matriz de Confusion")
+    plt.title("Matriz de Confusion "+titulo)
 
     plt.show()

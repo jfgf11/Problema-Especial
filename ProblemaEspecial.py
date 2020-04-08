@@ -9,7 +9,7 @@ while True:
     print('4. Unir y')
     print('5. Unir x2')
     print('6. Crear y Entrenar RED 2D')
-    print('7. Solo entrenar')
+    print('7. Mostrar Matriz de confusion')
     print('8. Salir')
     print('-------------------------------------------')
     print('Porfavor seleccione una opción')
@@ -55,7 +55,18 @@ while True:
     # Si ambos son True, se obtendrá únicamente el espectogram
     Espectogram_ = True  # Calcular el espectograma
     MFCC_ = False  # Calcular el MFCC
-    numero = '11025_Espectopgram'
+
+    validacion=True
+
+    if Espectogram_:
+        Esp_o_Mfcc = "Spectopgram"
+    elif MFCC_:
+        Esp_o_Mfcc = "MFCC"
+    else:
+        Esp_o_Mfcc = ""
+    titulo = nombre_ + '_' + str(sample_rate_) + '_' + Esp_o_Mfcc
+
+    numero =  str(sample_rate_) + '_' + Esp_o_Mfcc
 
     if opcion==1:
         guardarLocal_ = True
@@ -83,11 +94,11 @@ while True:
         d = {}
         hashGoogle()  # Realiza conexion con Google Drive
 
-        nombreModelo='Modelo_Casti_100.json'
+        nombreModelo='Modelo_Casti_sadas100.json'
         ruta = './drive/modelos/'
         guardarLocalmente(nombreModelo,ruta)
-        nombreModelo = 'Pesos_Modelo_Casti_100.h5'
-        ruta = './drive/modelos/'
+        nombreModelo = 'Pesos_Modelo_Casti_cdss100.h5'
+        ruta = './drive/modelos/pesos/'
         guardarLocalmente(nombreModelo, ruta)
 
     elif opcion==4:
@@ -109,9 +120,17 @@ while True:
     elif opcion==7:
         rutaModelo = './drive/modelos/Modelo_Casti_' + numero + '.json'
         rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
+        if validacion:
+            titulo=titulo+' validacion'
+            rutay = './drive/Datos_Procesados/datos_raw_conv/y_46-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
+            rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_46-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
+        else:
+            rutay = './drive/Datos_Procesados/datos_raw_conv/y_1-10_XML_0-7_Audios_100s_'+str(sample_rate_)+'_Casti_' + Esp_o_Mfcc
+            rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_1-10_XML_0-7_Audios_100s_'+str(sample_rate_)+'_Casti_' + Esp_o_Mfcc
 
         modelo=cargarModelo(rutaModelo, rutaPesos)
-        entrenarRed2(modelo)
+        entrenarRed2(modelo,titulo,rutax2,rutay)
+
     elif opcion==8:
         break
     else:

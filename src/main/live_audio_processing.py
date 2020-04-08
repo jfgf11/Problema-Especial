@@ -8,8 +8,8 @@ import time
 import librosa
 from tensorflow.keras.models import model_from_json
 
-rutaModelo="./Modelo_Casti_100.json"
-rutaPesos="./Pesos_Modelo_Casti_100.h5"
+rutaModelo="./Modelo_Casti_22050_Espectopdasgram.json"
+rutaPesos="./Pesos_Modelo_Casti_11025_Espectopgradasdm.h5"
 SAMPLE_RATE=22050
 window_length_stft = 0.025
 Step_size_stft = 0.010
