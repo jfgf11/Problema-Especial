@@ -39,8 +39,8 @@ while True:
 
     Sin_Background_ = False  # True: no se obtienen datos de background; False: No se obtienen datos de background  NO MOVER
     Features_ = False  # Obtener o no features NO MOVER
-    Inicial_pNXML_ = 1  # Número inicial de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
-    Final_pNXML_ = 10  # Número final de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
+    Inicial_pNXML_ = 45  # Número inicial de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
+    Final_pNXML_ = 55  # Número final de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
     Inicial_nAudios_ = 0  # Número inicial de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
     Final_nAudios_ = 7  # Número final de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
     rutaDatosXML_ = "./drive/xml/"  # Ruta para encontrar archivos xml  NO MOVER
@@ -50,13 +50,11 @@ while True:
     Solo_Background_ = False  # Solo obtener datos de background  NO MOVER
     nombre_ = "Casti"  ## PONER NOMBRE QUIEN REALIZA LA PRUEBA
     # a,b,c,d,e=str(ventana_Tiempo_)
-    guardarLocal_ = False
-
     # Si ambos son True, se obtendrá únicamente el espectogram
-    Espectogram_ = True  # Calcular el espectograma
-    MFCC_ = False  # Calcular el MFCC
-
+    Espectogram_ = False  # Calcular el espectograma
+    MFCC_ = True  # Calcular el MFCC
     validacion=True
+    guardarLocal_ = False
 
     if Espectogram_:
         Esp_o_Mfcc = "Spectopgram"
@@ -122,8 +120,8 @@ while True:
         rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
         if validacion:
             titulo=titulo+' validacion'
-            rutay = './drive/Datos_Procesados/datos_raw_conv/y_46-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
-            rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_46-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
+            rutay = './drive/Datos_Procesados/datos_raw_conv/y_45-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
+            rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_45-55_XML_0-7_Audios_100s_' + str(sample_rate_) + '_Casti_' + Esp_o_Mfcc
         else:
             rutay = './drive/Datos_Procesados/datos_raw_conv/y_1-10_XML_0-7_Audios_100s_'+str(sample_rate_)+'_Casti_' + Esp_o_Mfcc
             rutax2 = './drive/Datos_Procesados/datos_raw_conv/x2_1-10_XML_0-7_Audios_100s_'+str(sample_rate_)+'_Casti_' + Esp_o_Mfcc

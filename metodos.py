@@ -411,7 +411,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
     elif variable=='y':
 
         print('guardando y')
-        y_def = np.zeros(int(numero_magico / NMV))
+        y_def = None
         anterior=0
         for i in range(z):
             ruta = dar_ruta(rutaDatosParciales, Features, 'y_' + str(i) + '_', Inicial_pNXML, Final_pNXML,
@@ -420,6 +420,9 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
             y = np.load(ruta + '.npy')
             print('cargo archivo ',i)
             print(y.shape)
+
+            if i==0:
+                y_def = np.zeros(y.size*z)
 
             y_def[anterior:anterior+y.size] = y
             anterior+=y.size
@@ -447,7 +450,7 @@ def join(variable,z,rutaDatosParciales,ruta_resultados,Features,Inicial_pNXML,Fi
             print(x2.shape)
             if i==0:
                 x2_def = np.zeros([x2.shape[0]*z,x2.shape[1],x2.shape[2]])
-                x2_def[anterior:anterior + x2.shape[0],:,:]=x2
+            x2_def[anterior:anterior + x2.shape[0],:,:]=x2
             anterior += x2.shape[0]
         ruta = dar_ruta(ruta_resultados, Features, 'x2_', Inicial_pNXML, Final_pNXML, Inicial_nAudios,
                         Final_nAudios, ventana_Tiempo, sample_rate, nombre, Sin_Background, Solo_Background,
