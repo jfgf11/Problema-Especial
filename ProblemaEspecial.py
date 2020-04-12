@@ -4,7 +4,7 @@ while True:
     print('Menu para seleccionar la accion a ejecutar')
     print('-------------------------------------------')
     print('1. Descargar Audios y xml de google drive.')
-    print('2. Sacar x, x2 y y')
+    print('2. Sacar x2 y y')
     print('3. Descargar modelo de Drive')
     print('4. Unir y')
     print('5. Unir x2')
@@ -39,8 +39,8 @@ while True:
 
     Sin_Background_ = False  # True: no se obtienen datos de background; False: No se obtienen datos de background  NO MOVER
     Features_ = False  # Obtener o no features NO MOVER
-    Inicial_pNXML_ = 45  # Número inicial de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
-    Final_pNXML_ = 55  # Número final de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
+    Inicial_pNXML_ = 11  # Número inicial de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
+    Final_pNXML_ = 40  # Número final de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
     Inicial_nAudios_ = 0  # Número inicial de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
     Final_nAudios_ = 7  # Número final de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
     rutaDatosXML_ = "./drive/xml/"  # Ruta para encontrar archivos xml  NO MOVER
@@ -89,13 +89,12 @@ while True:
             Step_size_stft=Step_size_stft_, guardarLocal=guardarLocal_, MFCC=MFCC_, Espectogram=Espectogram_)
 
     elif opcion==3:
-        d = {}
         hashGoogle()  # Realiza conexion con Google Drive
 
-        nombreModelo='Modelo_Casti_sadas100.json'
+        nombreModelo='Modelo_Casti_' + numero + '.json'
         ruta = './drive/modelos/'
         guardarLocalmente(nombreModelo,ruta)
-        nombreModelo = 'Pesos_Modelo_Casti_cdss100.h5'
+        nombreModelo = 'Pesos_Modelo_Casti_' + numero + '.h5'
         ruta = './drive/modelos/pesos/'
         guardarLocalmente(nombreModelo, ruta)
 
@@ -105,16 +104,19 @@ while True:
         join('y', z, rutaDatosParciales_, ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
             Final_nAudios_,
             ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_)
+
     elif opcion==5:
         print('Ingrese el numero de archivos que va a unir:')
         z = int(input())
         join('x2', z, rutaDatosParciales_, ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
             Final_nAudios_,
             ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_)
+
     elif opcion==6:
         entrenarRed(ruta_resultados, Features_, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_, Final_nAudios_,
                     ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectogram_,
                     numero)
+
     elif opcion==7:
         rutaModelo = './drive/modelos/Modelo_Casti_' + numero + '.json'
         rutaPesos = './drive/modelos/pesos/Pesos_Modelo_Casti_' + numero + '.h5'
@@ -132,6 +134,6 @@ while True:
     elif opcion==8:
         break
     else:
-        print('wtf esto es ilegal.')
+        break
 
 print("Se acabo")

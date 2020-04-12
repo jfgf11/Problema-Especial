@@ -1,77 +1,32 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import psutil
-
 import tensorflow.compat.v1 as tf
-
-import matplotlib.pyplot as plt
-
 # Tensor Flow
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import Conv1D
-from tensorflow.keras.layers import MaxPooling1D
-from tensorflow.keras.layers import AveragePooling1D
-from tensorflow.keras.layers import GlobalAveragePooling1D
-from tensorflow.keras.layers import GlobalMaxPooling1D
 from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
-from tensorflow.keras.layers import AveragePooling2D
-from tensorflow.keras.layers import GlobalAveragePooling2D
-from tensorflow.keras.layers import GlobalMaxPooling2D
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import concatenate
 from tensorflow.keras.layers import Input
-from tensorflow.keras.layers import LSTM
-from tensorflow.keras.layers import Reshape
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.layers import Activation
 from tensorflow.keras import optimizers
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.models import model_from_json
-from tensorflow.keras.models import Model
-from tensorflow.keras.utils import model_to_dot
 from tensorflow.keras.utils import plot_model
-from IPython.display import SVG
-
 # Recopilacion de datos
 import xml.dom.minidom
-from scipy.io import wavfile
 import numpy as np
-
 # Para el preprocesamiento
 from sklearn.model_selection import train_test_split
-from imblearn.over_sampling import RandomOverSampler
-from imblearn.under_sampling import RandomUnderSampler
-from sklearn import preprocessing
-from collections import Counter
-
 import librosa
 import progressbar
-
 # Import libraries
 import librosa.display
-from matplotlib.pyplot import specgram
-import pandas as pd
-import glob
-from sklearn.metrics import confusion_matrix
-import IPython.display as ipd  # To play sound in the notebook
-import os
-import sys
-import warnings
-from scipy import signal
-from scipy.fft import fftshift
-
 #Redes neuronales sklearn
-from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import plot_confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
-
 from sklearn.utils.class_weight import compute_class_weight
 
 tf.disable_v2_behavior()

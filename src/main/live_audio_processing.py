@@ -2,14 +2,13 @@
 import pyaudio
 import struct
 import numpy as np
-#from scipy import signal
 import threading
 import time
 import librosa
 from tensorflow.keras.models import model_from_json
 
-rutaModelo="./Modelo_Casti_22050_Espectopdasgram.json"
-rutaPesos="./Pesos_Modelo_Casti_11025_Espectopgradasdm.h5"
+rutaModelo="../../drive/modelos/Modelo_Casti_22050_Spectopgram.json"
+rutaPesos="../../drive/modelos/pesos/Pesos_Modelo_Casti_22050_Spectopgram.h5"
 SAMPLE_RATE=22050
 window_length_stft = 0.025
 Step_size_stft = 0.010
@@ -94,9 +93,6 @@ class AudioHandler(object):
             #print ("Tiempo Superado")
         #return
 
-    #TODO se ve mas bonito en amarillo
-    #TODO por el TODO :p shtoooo voy as grabar ups apague el parlate soy un huevonsaso jajajaj a lo bien aveces me paso again shtoooo
-    #TODO si detecta super bien el glass break da bien menos en gunshot ahi si medio se jode pero igual Pero los ruidos de fondo los toma como gritos
     def listen(self):
         try:
             raw_block = self.stream.read(INPUT_FRAMES_PER_BLOCK, exception_on_overflow = False)
@@ -112,8 +108,6 @@ class AudioHandler(object):
         self.processBlock(toProcess)
         #x = threading.Thread(target=self.processBlock, args=(toProcess,))
         #x.start()
-
-
 
 if __name__ == '__main__':
     audio = AudioHandler()
