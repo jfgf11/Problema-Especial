@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import wave
+
 import pyaudio
 import struct
 import numpy as np
@@ -6,9 +8,10 @@ import threading
 import time
 import librosa
 from tensorflow.keras.models import model_from_json
+from termcolor import colored
 
-rutaModelo="../../drive/modelos/Modelo_Casti_22050_Spectopgram.json"
-rutaPesos="../../drive/modelos/pesos/Pesos_Modelo_Casti_22050_Spectopgram.h5"
+rutaModelo="./Modelo_Male_100_nuestrosSpectopgram.json"
+rutaPesos="./Pesos_Modelo_Male_100_nuestrosSpectopgram.h5"
 SAMPLE_RATE=22050
 window_length_stft = 0.025
 Step_size_stft = 0.010
@@ -25,6 +28,7 @@ class AudioHandler(object):
         self.stream = self.open_mic_stream()
         self.modelo1=self.iniciar()
         self.plot_counter = 0
+        self.especto = True
 
     def stop(self):
         self.stream.close()
@@ -47,12 +51,15 @@ class AudioHandler(object):
     def open_mic_stream( self ):
         device_index = self.find_input_device()
 
+        #audio_snowball = wave.open('./audio_snowball.m4a', 'rb')
+        #print(audio_snowball.getsampwidth(),audio_snowball.getnchannels(),audio_snowball.getframerate())
         stream = self.pa.open(  format = pyaudio.paInt16,
                                 channels = 1,
                                 rate = SAMPLE_RATE,
                                 input = True,
                                 input_device_index = device_index,
-                                frames_per_buffer = INPUT_FRAMES_PER_BLOCK)
+                                frames_per_buffer = INPUT_FRAMES_PER_BLOCK
+        )
 
         return stream
 
@@ -78,12 +85,23 @@ class AudioHandler(object):
 
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
-        mfcc = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,
-                                    n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE))
-
+        if self.especto==False:
+            mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20)
+        else:
+            mfcc = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,
+                n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE))
         alto_1, ancho_1 = mfcc.shape
         mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
-        print(np.argmax(self.modelo1.predict(mfcc), axis=-1))
+        #print(self.modelo1.predict(mfcc))
+        clase = np.argmax(self.modelo1.predict(mfcc), axis=-1)
+        if clase[0]==0:
+            print(colored('0', 'magenta'))
+        elif clase[0]==1:
+            print(colored('1', 'green'))
+        elif clase[0]==2:
+            print(colored('2', 'blue'))
+        elif clase[0]==3:
+            print(colored('3', 'red'))
         #print('sin argMax: ',self.modelo1.predict(mfcc))
 
         #end = time.time()

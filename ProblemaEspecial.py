@@ -1,4 +1,6 @@
 from metodos import *
+import numpy as np
+import csv
 
 while True:
     print('Menu para seleccionar la accion a ejecutar')
@@ -10,7 +12,7 @@ while True:
     print('5. Unir x2')
     print('6. Crear y Entrenar RED 2D')
     print('7. Mostrar Matriz de confusion')
-    print('8. Modificar parametros')
+    print('8. Cross validation')
     print('9. Salir')
     print('-------------------------------------------')
     print('Porfavor seleccione una opción')
@@ -31,66 +33,58 @@ while True:
     '''
 
     if True: # parametros
-        window_length_stft_ = 0.025  # Ventana de tiempo para la short-Time Fourier Transform
-        Inicial_pNXML_ = 1  # Número inicial de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
-        Final_pNXML_ = 10  # Número final de archivos XML utilizados  NO MOVER, a menos de que se quiera obtener 45 a 55
-        Espectograma_ = True  # Calcular el espectograma
-        MFCC_ = False  # Calcular el MFCC
-        validacion=True
-        nombre_ = ""  # PONER NOMBRE QUIEN REALIZA LA PRUEBA
-
-        ventana_Tiempo_ = 0.100  # La ventana de tiempo de cada muestra (XX_ms)
-        ventana_Tiempo_string='100'
+        metodo_ = 'cross_validation'
+        ventana_Tiempo_ = 0.700  # La ventana de tiempo de cada muestra (XX_ms)
         salto_de_ventana_ = 4  # Corrimiento en tiempo (XXms/4)
         sample_rate_ = 22050  # Tasa remuestreo
+        Inicial_pNXML_ = 1  # Número inicial de archivos XML utilizados
+        Final_pNXML_ = 15  # Número final de archivos XML utilizados
+        Inicial_pNXML_test = 16  # Número inicial de archivos XML utilizados
+        Final_pNXML_test = 18  # Número final de archivos XML utilizados
+        Inicial_pNXML_validacion = 19  # Número inicial de archivos XML utilizados
+        Final_pNXML_validacion = 21  # Número final de archivos XML utilizados
+        Espectograma_ = True  # Calcular el espectograma
+        MFCC_ = True  # Calcular el MFCC
+        it=''
+
+        window_length_stft_ = 0.025  # Ventana de tiempo para la short-Time Fourier Transform
+        ventana_Tiempo_string='690'
+
         # Si se está obteniendo el espectogramo, el valor de la ventana no puede ser menor a 0.025s
         # Si se está obteniendo el MFCC, el valor de la ventana no puede ser menor a 0.03125s
 
         Step_size_stft_ = 0.010  # Saltos el en tiempo para la transformada de Fourier, fíjenlo menor a la ventana stft, si quieren pueden aumentar
         Sin_Background_ = False  # True: no se obtienen datos de background; False: No se obtienen datos de background  NO MOVER
-        Inicial_nAudios_ = 0  # Número inicial de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
-        Final_nAudios_ = 7  # Número final de audios que se obtendrán (esto no aplica para nuestros audios)  NO MOVER
         rutaDatosXML_ = "./drive/xml/"  # Ruta para encontrar archivos xml  NO MOVER
         rutaDatosSounds_ = "./drive/sounds/"  # Ruta para encontrar Audios  NO MOVER
         ruta_resultados = './drive/datos_procesados/'
-        ruta_datos_parciales_ = "./drive/parciales/"
         Solo_Background_ = False  # Solo obtener datos de background  NO MOVER
         guardarLocal_ = False
 
         if Espectograma_:
-            Esp_o_Mfcc = "_spectrogram"
+            Esp_o_Mfcc = "_espectrogram"
         elif MFCC_:
             Esp_o_Mfcc = "_MFCC"
         else:
             Esp_o_Mfcc = ""
-        if nombre_ != "":
-            nombre_ = '_' + nombre_
 
-        titulo = str(Inicial_pNXML_) + "-" + str(Final_pNXML_)+nombre_ + '_' + str(sample_rate_) + Esp_o_Mfcc
+        titulo = str(sample_rate_) + '_'+str(salto_de_ventana_)
 
     if opcion==1:
         guardarLocal_ = True
         hashGoogle() # Realiza conexion con Google Drive
-        z = ObtenerSonidos(nombre=nombre_, Inicial_pNXML=Inicial_pNXML_, Final_pNXML=Final_pNXML_,
-                           Inicial_nAudios=Inicial_nAudios_, Final_nAudios=Final_nAudios_, ventana_Tiempo=ventana_Tiempo_,
-                           salto_de_ventana=salto_de_ventana_, Sin_Background=Sin_Background_,
-                           rutaDatosXML=rutaDatosXML_, rutaDatosParciales=ruta_datos_parciales_,
-                           rutaDatosSounds=rutaDatosSounds_,
-                           Solo_Background=Solo_Background_, sample_rate=sample_rate_,
-                           window_length_stft=window_length_stft_,
-                           Step_size_stft=Step_size_stft_, guardarLocal=guardarLocal_, MFCC=MFCC_, Espectogram=Espectograma_)
+        ObtenerSonidos(Inicial_pNXML_, Final_pNXML_,ventana_Tiempo_, salto_de_ventana_, Sin_Background_,
+            rutaDatosXML_, ruta_resultados, rutaDatosSounds_, Solo_Background_, sample_rate_, window_length_stft_,
+            Step_size_stft_, guardarLocal_)
 
     elif opcion==2:
-        a=[26]
-        for i in a:
-            z = ObtenerSonidos(nombre=nombre_, Inicial_pNXML=i, Final_pNXML=i+4,
-                               Inicial_nAudios=Inicial_nAudios_, Final_nAudios=Final_nAudios_, ventana_Tiempo=ventana_Tiempo_,
-                               salto_de_ventana=salto_de_ventana_, Sin_Background=Sin_Background_,
-                               rutaDatosXML=rutaDatosXML_, rutaDatosParciales=ruta_datos_parciales_,
-                               rutaDatosSounds=rutaDatosSounds_,
-                               Solo_Background=Solo_Background_, sample_rate=sample_rate_,
-                               window_length_stft=window_length_stft_,
-                               Step_size_stft=Step_size_stft_, guardarLocal=guardarLocal_, MFCC=MFCC_, Espectogram=Espectograma_)
+        lista_de_Listas = [[22050, 4]]
+        xmls = [[1,15],[16,18],[19,21]]
+        for i in lista_de_Listas:
+            for j in xmls:
+                ObtenerSonidos( j[0], j[1], ventana_Tiempo_, i[1], Sin_Background_,
+                           rutaDatosXML_, ruta_resultados, rutaDatosSounds_, Solo_Background_, i[0],
+                           window_length_stft_, Step_size_stft_, guardarLocal_)
 
     elif opcion==3:
         hashGoogle()  # Realiza conexion con Google Drive
@@ -108,109 +102,139 @@ while True:
         guardarLocalmente(nombreModelo, ruta)
 
     elif opcion==4:
-        lista = []  # Lista en la que se guardaran las rutas de los archivos a unir
-
-        Inicial_pNXML_ = 46
-        Inicial_pNXML_guardar = Inicial_pNXML_  # Se guarda el xml desde donde inicia
-        Final_pNXML_ = 50
-        ruta = dar_ruta(ruta_datos_parciales_, 'y_', Inicial_pNXML_, Final_pNXML_,
-                        Inicial_nAudios_, Final_nAudios_, ventana_Tiempo_string, sample_rate_, nombre_,
-                        Sin_Background_, Solo_Background_, Espectograma_, MFCC_)
-        lista.append(ruta + '.npy')
-
-        # En teoria entre archivos a unir solo deberia de cambiar el xml inicial y final.
-        Inicial_pNXML_ = 51
-        Final_pNXML_ = 55
-        Final_pNXML_guardar=Final_pNXML_
-        ruta = dar_ruta(ruta_datos_parciales_, 'y_', Inicial_pNXML_, Final_pNXML_,
-                        Inicial_nAudios_, Final_nAudios_, ventana_Tiempo_string, sample_rate_, nombre_,
-                        Sin_Background_, Solo_Background_, Espectograma_, MFCC_)
-        lista.append(ruta + '.npy')
-        # Si quiere unir mas de 2 archivos solo copie y pegue lo de arriba
-
-        # print(lista)
-        join('y_', lista, ruta_resultados, Inicial_pNXML_guardar, Final_pNXML_guardar, Inicial_nAudios_,
-             Final_nAudios_,
-             ventana_Tiempo_string, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectograma_)
+        pass
 
     elif opcion==5:
-        lista = []  # Lista en la que se guardaran las rutas de los archivos a unir
-
-        Inicial_pNXML_ = 46
-        Inicial_pNXML_guardar = Inicial_pNXML_  # Se guarda el xml desde donde inicia
-        Final_pNXML_ = 50
-        ruta = dar_ruta(ruta_datos_parciales_, 'x2_', Inicial_pNXML_, Final_pNXML_,
-                        Inicial_nAudios_, Final_nAudios_, ventana_Tiempo_string, sample_rate_, nombre_,
-                        Sin_Background_, Solo_Background_, Espectograma_, MFCC_)
-        lista.append(ruta + '.npy')
-
-        # En teoria entre archivos a unir solo deberia de cambiar el xml inicial y final.
-        Inicial_pNXML_ = 51
-        Final_pNXML_ = 55
-        Final_pNXML_guardar = Final_pNXML_
-        ruta = dar_ruta(ruta_datos_parciales_, 'x2_', Inicial_pNXML_, Final_pNXML_,
-                        Inicial_nAudios_, Final_nAudios_, ventana_Tiempo_string, sample_rate_, nombre_,
-                        Sin_Background_, Solo_Background_, Espectograma_, MFCC_)
-        lista.append(ruta + '.npy')
-        # Si quiere unir mas de 2 archivos solo copie y pegue lo de arriba
-
-        # print(lista)
-        join('x2_', lista, ruta_resultados, Inicial_pNXML_guardar, Final_pNXML_guardar, Inicial_nAudios_,
-             Final_nAudios_,
-             ventana_Tiempo_string, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectograma_)
+        pass
 
     elif opcion==6:
-        entrenarRed(ruta_resultados, Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_, Final_nAudios_,
-                    ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_, MFCC_, Espectograma_,
-                    titulo)
+        red_2d_cross_validation(ruta_resultados, ventana_Tiempo_, sample_rate_, 'oli', Sin_Background_, Solo_Background_,
+                                MFCC_, Espectograma_)
 
     elif opcion==7:
-        rutaModelo = './drive/modelos/Modelo_' + titulo + '.json'
-        rutaPesos = './drive/modelos/pesos/Pesos_Modelo_' + titulo + '.h5'
-        Inicial_pNXML_validacion=46
-        Final_pNXML_validacion=55
-        if validacion:
-            titulo=titulo+' validacion_' + Inicial_pNXML_validacion + '_' + Final_pNXML_validacion
-            rutay = dar_ruta(ruta_resultados, 'y_', Inicial_pNXML_validacion, Final_pNXML_validacion, Inicial_nAudios_,
-                             Final_nAudios_, ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_,
-                             Espectograma_, MFCC_)
-            rutax2 = dar_ruta(ruta_resultados, 'x2_', Inicial_pNXML_validacion, Final_pNXML_validacion, Inicial_nAudios_,
-                              Final_nAudios_, ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_,
-                              Espectograma_, MFCC_)
-        else:
-            rutay = dar_ruta(ruta_resultados, 'y_', Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
-                             Final_nAudios_, ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_,
-                             Espectograma_, MFCC_)
-            rutax2 = dar_ruta(ruta_resultados, 'x2_', Inicial_pNXML_, Final_pNXML_, Inicial_nAudios_,
-                              Final_nAudios_, ventana_Tiempo_, sample_rate_, nombre_, Sin_Background_, Solo_Background_,
-                              Espectograma_, MFCC_)
+        parametros = [[22050, 4],[22050, 4]]
+        under_over_pesos = ['oversampling']
+        f = open('drive/csv/resultados_cm.csv', 'w', newline='')
+        with f:
 
-        modelo=cargarModelo(rutaModelo, rutaPesos)
-        matriz_confusion(modelo, titulo, rutax2, rutay)
+            writer = csv.writer(f)
+            for l in range(5): # iteraciones
+                rows=[]
+                for i in range(len(parametros)):
+                    rows.append([])
+                for i in parametros:
+                    for j in under_over_pesos:
+
+                        # --------------------------------------------------------------
+                        # ---------------------- Extraer datos--------------------------
+                        # --------------------------------------------------------------
+
+                        titulo = str(i[0]) + '_' + str(i[1])
+
+                        x2_esp,x2_mfcc,y_train = extrar_datos(Inicial_pNXML_, Final_pNXML_, Espectograma_, MFCC_, ruta_resultados,
+                                    ventana_Tiempo_string, i[0], Sin_Background_, Solo_Background_, i[1])
+
+                        x2_esp_test, x2_mfcc_test, y_test = extrar_datos(Inicial_pNXML_test, Final_pNXML_test, Espectograma_,
+                                    MFCC_, ruta_resultados, ventana_Tiempo_string, i[0], Sin_Background_, Solo_Background_, i[1])
+
+                        x2_esp_validacion, x2_mfcc_validacion, y_validacion = extrar_datos(Inicial_pNXML_validacion, Final_pNXML_validacion, Espectograma_,
+                                    MFCC_, ruta_resultados,ventana_Tiempo_string, i[0], Sin_Background_, Solo_Background_, i[1])
+
+                        # --------------------------------------------------------------
+                        # ---------------------- Parametros Red-------------------------
+                        # --------------------------------------------------------------
+
+                        # Esta celda construye los modelos, a partir de los parametros especificados por cada una de las siguientes variables.
+                        # Es el numero de filtros que cada capa convolucional utiliza.
+                        numFiltros = np.array([12, 20, 20, 12, 10, 512])
+
+                        # Es el tamaño de los filtros utilizados en cada capa convolucional.
+                        tamFiltros = np.array([3, 3, 3, 3, 3, 5])
+
+                        # Es el tamaño de cada capa de Pooling.
+                        tamPooling = np.array([4, 2, 3, 3, 3, 3])
+
+                        # Es el numero de neuronas en cada capa de la red neuronal que sigue despues de la parte convolucional.
+                        numNeuronas = np.array([10, 10, 10, 16])
+
+                        # Es el tipo de optimizador a utilizar.
+                        # Se pueden especificar: "sgd", "adam" o "rmsprop"
+                        optimizer = "rmsprop"
+
+                        # Es la tasa de aprendizaje del optimizador.
+                        tasa = 0.1
+
+                        # Es el parametro de regularizacion a utilizar.
+                        alpha = 0.01
+
+                        epocas = 100
+                        batch_size = 5000
+
+                        # --------------------------------------------------------------
+                        # ---------------------- Entrenamiento Red----------------------
+                        # --------------------------------------------------------------
+
+                        if j == 'undersampling':
+                            x2_esp, x2_mfcc, y_train_esp, y_train_mfcc = random_under_sampling(Espectograma_, MFCC_,x2_esp,x2_mfcc,y_train)
+                            pesosClases = compute_class_weight(class_weight='balanced', classes=np.array([0, 1, 2, 3]), y=y_train_mfcc)
+                        elif j == 'oversampling':
+                            x2_esp, x2_mfcc, y_train_esp, y_train_mfcc = random_over_sampling(Espectograma_, MFCC_,x2_esp,x2_mfcc,y_train)
+                            pesosClases = compute_class_weight(class_weight='balanced', classes=np.array([0, 1, 2, 3]), y=y_train_mfcc)
+                        elif j =='pesos':
+                            pesosClases = compute_class_weight(class_weight='balanced', classes=np.array([0, 1, 2, 3]), y=y_train)
+                            y_train_esp = y_train
+                            y_train_mfcc = y_train
+
+                        x2_esp, x2_esp_test = reshape_data(x2_esp, x2_esp_test)
+                        numero_datos, uno, alto, ancho = x2_esp.shape
+                        modelo_esp = crearModelo2D(tasa, alpha, numFiltros, tamFiltros, tamPooling, numNeuronas, optimizer,
+                                                T_entrada_1=alto, T_entrada_2=ancho)
+
+                        modelo_esp=entrenar(epocas, batch_size, modelo_esp, x2_esp, y_train_esp, x2_esp_test, y_test, pesosClases, titulo + ' entrenamiento')
+
+
+                        #x2_mfcc, x2_mfcc_test = reshape_data(x2_mfcc, x2_mfcc_test)
+                        #numero_datos, uno, alto, ancho = x2_mfcc.shape
+                        #modelo_mfcc = crearModelo2D(tasa, alpha, numFiltros, tamFiltros, tamPooling, numNeuronas, optimizer,
+                                                    #T_entrada_1=alto, T_entrada_2=ancho)
+
+                        #modelo_mfcc=entrenar(epocas, batch_size, modelo_mfcc, x2_mfcc, y_train_mfcc, x2_mfcc_test, y_test, pesosClases, titulo+ ' entrenamiento')
+
+                        # --------------------------------------------------------------
+                        # ------------- Validación y guardar resultados-----------------
+                        # --------------------------------------------------------------
+
+                        #Numero_Datos, alto, ancho = x2_mfcc_validacion.shape
+                        #x2_mfcc_validacion = np.reshape(x2_mfcc_validacion, (-1, 1, alto, ancho), 'F')
+                        #cm=graficarMatrizConfusion(y_validacion, modelo_mfcc.predict_classes(x2_mfcc_validacion),
+                        #                        titulo + ' mfcc ' + j + it)
+
+                        #for h in range(len(cm)):
+                        #    for k in cm[h]:
+                        #        rows[h].append(k)
+
+                        #for row in rows:
+                            #row.append('')
+
+                        Numero_Datos, alto, ancho = x2_esp_validacion.shape
+                        x2_esp_validacion = np.reshape(x2_esp_validacion, (-1, 1, alto, ancho), 'F')
+                        cm=graficarMatrizConfusion(y_validacion, modelo_esp.predict_classes(x2_esp_validacion), titulo + ' espoctrogram ' + j + it)
+
+                        #for h in range(len(cm)):
+                        #    for k in cm[h]:
+                        #        rows[h].append(k)
+
+                        #for row in rows:
+                        #    row.append('')
+
+                #writer.writerow([''])
+                #for row in rows:
+                #    writer.writerow(row)
+
 
     elif opcion==8:
-        print('Menu para cambiar variables')
-        print('-------------------------------------------')
-        print('1. ventana_Tiempo_')
-        print('2. Inicial_pNXML_')
-        print('3. Final_pNXML_')
-        print('4. nombre_')
-        print('5. Unir x2')
-        print('6. Espectogram_ o MFCC')
-        print('7. validacion')
-        print('-------------------------------------------')
-        print('Porfavor seleccione una opción')
-
-        entrada = int(input())
-
-        while not (0 < entrada < 7):
-            print('Porfavor seleccione una opción entre 1 y 8')
-            entrada = int(input())
-
-        if entrada == 1:
-            pass
-        elif entrada == 2:
-            pass
+        red_2d_cross_validation(ruta_resultados, ventana_Tiempo_, sample_rate_, Sin_Background_, Solo_Background_,
+                                MFCC_, Espectograma_)
     elif opcion==9:
         break
     else:
