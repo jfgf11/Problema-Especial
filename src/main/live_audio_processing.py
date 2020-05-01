@@ -85,8 +85,9 @@ class AudioHandler(object):
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
         if self.especto and self.mfcc:
-            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20, n_fft = int(window_length_stft_mfcc*SAMPLE_RATE),
-                                        hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
+            # MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20, n_fft=int(window_length_stft_mfcc*SAMPLE_RATE),
+            #                            hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True)
+            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20)
             esp = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,n_fft=int(window_length_stft_esp * SAMPLE_RATE),
                                                   hop_length=int(Step_size_stft * SAMPLE_RATE))
             alto_1, ancho_1 = MFCC.shape
