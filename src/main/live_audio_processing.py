@@ -10,11 +10,11 @@ import librosa
 from tensorflow.keras.models import model_from_json
 from termcolor import colored
 
-rutaModelo="./modelo_mejor_por_ahora_mfcc_y_spectrogram.json"
-rutaPesos="./pesos_modelo_mejor_por_ahora_mfcc_y_spectrogram.h5"
+rutaModelo="./modelo.json"
+rutaPesos="./pesos_modelo.h5"
 SAMPLE_RATE = 22050
 window_length_stft_mfcc = 0.032
-window_length_stft_esp = 0.025
+window_length_stft_esp = 0.032
 Step_size_stft = 0.010
 ventana_Tiempo_ = 0.450
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
