@@ -10,12 +10,13 @@ import librosa
 from tensorflow.keras.models import model_from_json
 from termcolor import colored
 
-rutaModelo="./Modelo_Male_100_nuestrosSpectopgram.json"
-rutaPesos="./Pesos_Modelo_Male_100_nuestrosSpectopgram.h5"
-SAMPLE_RATE=22050
-window_length_stft = 0.025
+rutaModelo="./modelo_mejor_por_ahora_mfcc_y_spectrogram.json"
+rutaPesos="./pesos_modelo_mejor_por_ahora_mfcc_y_spectrogram.h5"
+SAMPLE_RATE = 22050
+window_length_stft_mfcc = 0.032
+window_length_stft_esp = 0.025
 Step_size_stft = 0.010
-ventana_Tiempo_ = 0.100
+ventana_Tiempo_ = 0.450
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 modelo1=None
 
@@ -29,6 +30,7 @@ class AudioHandler(object):
         self.modelo1=self.iniciar()
         self.plot_counter = 0
         self.especto = True
+        self.mfcc = True
 
     def stop(self):
         self.stream.close()
@@ -50,9 +52,6 @@ class AudioHandler(object):
 
     def open_mic_stream( self ):
         device_index = self.find_input_device()
-
-        #audio_snowball = wave.open('./audio_snowball.m4a', 'rb')
-        #print(audio_snowball.getsampwidth(),audio_snowball.getnchannels(),audio_snowball.getframerate())
         stream = self.pa.open(  format = pyaudio.paInt16,
                                 channels = 1,
                                 rate = SAMPLE_RATE,
@@ -85,15 +84,30 @@ class AudioHandler(object):
 
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
-        if self.especto==False:
-            mfcc = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20)
-        else:
-            mfcc = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,
-                n_fft = int(window_length_stft*SAMPLE_RATE), hop_length = int(Step_size_stft*SAMPLE_RATE))
-        alto_1, ancho_1 = mfcc.shape
-        mfcc = np.reshape(mfcc, (-1, 1, alto_1, ancho_1), 'F')
-        #print(self.modelo1.predict(mfcc))
-        clase = np.argmax(self.modelo1.predict(mfcc), axis=-1)
+        if self.especto and self.mfcc:
+            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20, n_fft = int(window_length_stft_mfcc*SAMPLE_RATE),
+                                        hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True )
+            esp = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,n_fft=int(window_length_stft_esp * SAMPLE_RATE),
+                                                  hop_length=int(Step_size_stft * SAMPLE_RATE))
+            alto_1, ancho_1 = MFCC.shape
+            MFCC = np.reshape(MFCC, (-1, alto_1, ancho_1, 1), 'F')
+            alto_1, ancho_1 = esp.shape
+            esp = np.reshape(esp, (-1, alto_1, ancho_1, 1), 'F')
+            clase = np.argmax(self.modelo1.predict([esp, MFCC]), axis=-1)
+        elif self.especto:
+            esp = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,n_fft=int(window_length_stft_esp * SAMPLE_RATE),
+                                                  hop_length=int(Step_size_stft * SAMPLE_RATE))
+            alto_1, ancho_1 = esp.shape
+            esp = np.reshape(esp, (-1, alto_1, ancho_1, 1), 'F')
+            clase = np.argmax(self.modelo1.predict(esp), axis=-1)
+        elif self.mfcc:
+            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20,
+                                        n_fft=int(window_length_stft_mfcc * SAMPLE_RATE),
+                                        hop_length=int(Step_size_stft * SAMPLE_RATE), htk=True)
+            alto_1, ancho_1 = MFCC.shape
+            MFCC = np.reshape(MFCC, (-1, alto_1, ancho_1, 1), 'F')
+            clase = np.argmax(self.modelo1.predict(MFCC), axis=-1)
+
         if clase[0]==0:
             print(colored('0', 'magenta'))
         elif clase[0]==1:
@@ -102,7 +116,6 @@ class AudioHandler(object):
             print(colored('2', 'blue'))
         elif clase[0]==3:
             print(colored('3', 'red'))
-        #print('sin argMax: ',self.modelo1.predict(mfcc))
 
         #end = time.time()
         #print("Processing finished")
@@ -113,7 +126,7 @@ class AudioHandler(object):
 
     def listen(self):
         try:
-            raw_block = self.stream.read(INPUT_FRAMES_PER_BLOCK, exception_on_overflow = False)
+            raw_block = self.stream.read(INPUT_FRAMES_PER_BLOCK, exception_on_overflow=False)
             count = len(raw_block) / 2
             format = '%dh' % (count)
             audio = np.array(struct.unpack(format, raw_block))
