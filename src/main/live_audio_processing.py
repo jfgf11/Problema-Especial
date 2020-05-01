@@ -10,11 +10,11 @@ import librosa
 from tensorflow.keras.models import model_from_json
 from termcolor import colored
 
-rutaModelo="./modelo.json"
-rutaPesos="./pesos_modelo.h5"
+rutaModelo="./modelo_mejor_por_ahora_mfcc_y_spectrogram.json"
+rutaPesos="./pesos_modelo_mejor_por_ahora_mfcc_y_spectrogram.h5"
 SAMPLE_RATE = 22050
 window_length_stft_mfcc = 0.032
-window_length_stft_esp = 0.032
+window_length_stft_esp = 0.025
 Step_size_stft = 0.010
 ventana_Tiempo_ = 0.450
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
@@ -85,9 +85,8 @@ class AudioHandler(object):
         audio = audio / 1.0
         #ps=librosa.feature.melspectrogram(audio,RATE)
         if self.especto and self.mfcc:
-            # MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20, n_fft=int(window_length_stft_mfcc*SAMPLE_RATE),
-            #                            hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True)
-            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20)
+            MFCC = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=20, n_fft=int(window_length_stft_mfcc*SAMPLE_RATE),
+                                        hop_length = int(Step_size_stft*SAMPLE_RATE), htk=True)
             esp = librosa.feature.melspectrogram(y=audio, sr=SAMPLE_RATE,n_fft=int(window_length_stft_esp * SAMPLE_RATE),
                                                   hop_length=int(Step_size_stft * SAMPLE_RATE))
             alto_1, ancho_1 = MFCC.shape
