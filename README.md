@@ -1,9 +1,9 @@
 # Problema-Especial
 
 ## Proyecto
-Repositorio de clase problema especial, en el que se 
-implementa una modelo de aprendizaje para detectar sonidos
-como gritos, disparos, vidrios rotos y sonido de ambiente. 
+Repositorio del proyecto problema especial, en el que se 
+implementa una modelo de aprendizaje para detectar  y diferenciar
+señales de auxilio en ambientes no controlados. 
 
 ## Instalación dependencias
 
@@ -58,3 +58,8 @@ pip install pyaudio
 pip install librosa
 pip install --upgrade tensorflow
 ````
+
+## Ejecucion del programa
+
+En la raspberry pi, ir a la carpeta del repositorio y desde 
+consola ejecutar el archivo start.sh

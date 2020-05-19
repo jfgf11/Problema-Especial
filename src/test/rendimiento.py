@@ -2,11 +2,12 @@
 import pyaudio
 import struct
 import numpy as np
-import threading
 import time
 import librosa
 from tensorflow.keras.models import model_from_json
 from termcolor import colored
+import psutil
+from scipy import stats
 
 modelo = 'modelo'
 pesos = 'modelo'
@@ -36,10 +37,11 @@ def cargarModelo(pRutaModelo, pRutaPesos):
 
 
 class AudioHandler(object):
+
     def __init__(self):
         self.pa = pyaudio.PyAudio()
         self.stream = self.open_mic_stream()
-        self.model = self.iniciar()
+        self.modelo = self.iniciar()
         self.plot_counter = 0
 
     def stop(self):
@@ -68,10 +70,12 @@ class AudioHandler(object):
 
     def iniciar(self):
         print('Inicio')
-        self.model = cargarModelo(rutaModelo, rutaPesos)
-        return self.model
+        self.modelo = cargarModelo(rutaModelo, rutaPesos)
+
+        return self.modelo
 
     def processBlock(self, p_audio):
+
         audio_n = p_audio / 1.0
 
         MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=20,
@@ -83,16 +87,7 @@ class AudioHandler(object):
         MFCC = np.reshape(MFCC, (-1, alto, ancho, 1), 'F')
         alto, ancho = esp.shape
         esp = np.reshape(esp, (-1, alto, ancho, 1), 'F')
-        clase = np.argmax(self.model.predict([esp, MFCC]), axis=-1)
-
-        if clase[0] == 0:
-            print(colored('0', 'magenta'))
-        elif clase[0] == 1:
-            print(colored('1', 'green'))
-        elif clase[0] == 2:
-            print(colored('2', 'blue'))
-        elif clase[0] == 3:
-            print(colored('3', 'red'))
+        clase = np.argmax(self.modelo.predict([esp, MFCC]), axis=-1)
 
     def listen(self):
         try:
@@ -108,19 +103,48 @@ class AudioHandler(object):
 
 
 if __name__ == '__main__':
+
+    print('--------------------- Iniciando Pruebas -------------------------')
+
+    ram_inicial = psutil.virtual_memory()
     audio = AudioHandler()
-    run = True
-    while run:
-        # print(threading.active_count())
-        toProcess =audio.listen()
+    ram_operacion = psutil.virtual_memory()
+    print(' Peso inicializacion', ram_inicial - ram_operacion)
+
+    # Prueba tiempo de recoleccion de audio.
+    tiempo_recoleccion = []
+    for k in range(100):
+        start = time.time()
+        toProcess = audio.listen()
+        end = time.time()
+        tiempo_recoleccion.append(end - start)
+
+    print('--------------------- Tiempo de recoleccion -------------------------')
+    print('media ', np.mean(tiempo_recoleccion))
+    print('mediana ', np.median(tiempo_recoleccion))
+    print('moda ', stats.mode(tiempo_recoleccion))
+
+    tiempo_recoleccion = None
+
+    # Prueba tiempo de prediccion.
+    memoria = []
+    tiempo_prediccion = []
+    for k in range(100):
+        m1 = psutil.virtual_memory()
+        toProcess = audio.listen()
+        m2 = psutil.virtual_memory()  # calcula peso del audio
+        memoria.append(m2 - m1)
+        start = time.time()
         audio.processBlock(toProcess)
-        # x = threading.Thread(target=self.processBlock, args=(toProcess,))
-        # x.start()
-        if threading.active_count() > 10:
-            run = False
+        end = time.time()  # calcula tiempo de procesamiento
+        tiempo_prediccion.append(end - start)
 
-    while threading.active_count() > 1:
-        print('Cerrando Threads')
-        time.sleep(0.5)
+    print('--------------------- Tiempo de procesamiento -------------------------')
+    print('media ', np.mean(tiempo_prediccion))
+    print('mediana ', np.median(tiempo_prediccion))
+    print('moda ', stats.mode(tiempo_prediccion))
 
-    print('Se han cerrado todos los threads')
+    print('--------------------- Memoria ocupada -------------------------')
+    print('media ', np.mean(memoria))
+    print('mediana ', np.median(memoria))
+    print('moda ', stats.mode(memoria))
