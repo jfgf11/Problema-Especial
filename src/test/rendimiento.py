@@ -103,11 +103,12 @@ class AudioHandler(object):
 
 if __name__ == '__main__':
 
+    ram = psutil.virtual_memory()
     print('--------------------- Iniciando Pruebas -------------------------')
 
-    ram_inicial = psutil.virtual_memory()
+    ram_inicial = ram.available
     audio = AudioHandler()
-    ram_operacion = psutil.virtual_memory()
+    ram_operacion = ram.available
     print(' Peso inicializacion', int(ram_inicial) - int(ram_operacion))
 
     # Prueba tiempo de recoleccion de audio.
@@ -129,9 +130,9 @@ if __name__ == '__main__':
     memoria = []
     tiempo_prediccion = []
     for k in range(100):
-        m1 = psutil.virtual_memory()
+        m1 = ram.available
         toProcess = audio.listen()
-        m2 = psutil.virtual_memory()  # calcula peso del audio
+        m2 = ram.available  # calcula peso del audio
         memoria.append(int(m2) - int(m1))
         start = time.time()
         audio.processBlock(toProcess)
