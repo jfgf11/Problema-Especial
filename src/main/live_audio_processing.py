@@ -9,7 +9,7 @@ from tensorflow.keras.models import model_from_json
 from termcolor import colored
 
 modelo = 'modelo'
-pesos = 'modelo'
+pesos = 'pesos_modelo'
 
 rutaModelo = "./src/modelo/" + modelo + ".json"
 rutaPesos = "./src/modelo/" + pesos + ".h5"
@@ -17,8 +17,8 @@ rutaPesos = "./src/modelo/" + pesos + ".h5"
 SAMPLE_RATE = 22050
 window_length_stft_mfcc = 0.032
 window_length_stft_esp = 0.025
-Step_size_stft = 0.010
-ventana_Tiempo_ = 0.450
+Step_size_stft = 0.025
+ventana_Tiempo_ = 0.100
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 
 
