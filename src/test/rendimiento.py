@@ -108,7 +108,7 @@ if __name__ == '__main__':
     ram_inicial = psutil.virtual_memory()
     audio = AudioHandler()
     ram_operacion = psutil.virtual_memory()
-    print(' Peso inicializacion', ram_inicial - ram_operacion)
+    print(' Peso inicializacion', int(ram_inicial) - int(ram_operacion))
 
     # Prueba tiempo de recoleccion de audio.
     tiempo_recoleccion = []
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         start = time.time()
         toProcess = audio.listen()
         end = time.time()
-        tiempo_recoleccion.append(end - start)
+        tiempo_recoleccion.append(float(end) - float(start))
 
     print('--------------------- Tiempo de recoleccion -------------------------')
     print('media ', np.mean(tiempo_recoleccion))
@@ -132,11 +132,11 @@ if __name__ == '__main__':
         m1 = psutil.virtual_memory()
         toProcess = audio.listen()
         m2 = psutil.virtual_memory()  # calcula peso del audio
-        memoria.append(m2 - m1)
+        memoria.append(int(m2) - int(m1))
         start = time.time()
         audio.processBlock(toProcess)
         end = time.time()  # calcula tiempo de procesamiento
-        tiempo_prediccion.append(end - start)
+        tiempo_prediccion.append(float(end) - float(start))
 
     print('--------------------- Tiempo de procesamiento -------------------------')
     print('media ', np.mean(tiempo_prediccion))
