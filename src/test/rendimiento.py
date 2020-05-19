@@ -16,7 +16,7 @@ rutaPesos = "./src/modelo/" + pesos + ".h5"
 
 SAMPLE_RATE = 22050
 window_length_stft_mfcc = 0.032
-window_length_stft_esp = 0.025
+window_length_stft_esp = 0.032
 Step_size_stft = 0.025
 ventana_Tiempo_ = 0.100
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
@@ -77,7 +77,7 @@ class AudioHandler(object):
 
         audio_n = p_audio / 1.0
 
-        MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=20,
+        MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=13,
                                     n_fft=int(window_length_stft_mfcc * SAMPLE_RATE),
                                     hop_length=int(Step_size_stft * SAMPLE_RATE), htk=True)
         esp = librosa.feature.melspectrogram(y=audio_n, sr=SAMPLE_RATE, n_fft=int(window_length_stft_esp * SAMPLE_RATE),
