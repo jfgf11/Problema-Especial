@@ -8,8 +8,8 @@ import librosa
 from tensorflow.keras.models import model_from_json
 from termcolor import colored
 
-modelo = 'modelo'
-pesos = 'pesos_modelo'
+modelo = 'modelo_final'
+pesos = 'pesos_modelo_final'
 
 rutaModelo = "./src/modelo/" + modelo + ".json"
 rutaPesos = "./src/modelo/" + pesos + ".h5"
@@ -18,7 +18,7 @@ SAMPLE_RATE = 22050
 window_length_stft_mfcc = 0.032
 window_length_stft_esp = 0.025
 Step_size_stft = 0.01
-ventana_Tiempo_ = 0.100
+ventana_Tiempo_ = 0.450
 INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
 
 
@@ -37,9 +37,12 @@ def cargarModelo(pRutaModelo, pRutaPesos):
 
 class AudioHandler(object):
     def __init__(self):
+        self.mfcc = None
+        self.esp = None
+        self.modelo = None
         self.pa = pyaudio.PyAudio()
         self.stream = self.open_mic_stream()
-        self.model = self.iniciar()
+        self.iniciar()
         self.plot_counter = 0
 
     def stop(self):
@@ -67,24 +70,28 @@ class AudioHandler(object):
         return stream
 
     def iniciar(self):
-        print('Inicio')
-        self.model = cargarModelo(rutaModelo, rutaPesos)
-        return self.model
+        self.modelo = cargarModelo(rutaModelo, rutaPesos)
 
     def processBlock(self, p_audio):
+        self.preprocesing(p_audio)
+        self.predict()
+
+    def preprocesing(self, p_audio):
+
         audio_n = p_audio / 1.0
 
-        MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=13,
+        MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=20,
                                     n_fft=int(window_length_stft_mfcc * SAMPLE_RATE),
                                     hop_length=int(Step_size_stft * SAMPLE_RATE), htk=True)
         esp = librosa.feature.melspectrogram(y=audio_n, sr=SAMPLE_RATE, n_fft=int(window_length_stft_esp * SAMPLE_RATE),
                                              hop_length=int(Step_size_stft * SAMPLE_RATE))
         alto, ancho = MFCC.shape
-        MFCC = np.reshape(MFCC, (-1, alto, ancho, 1), 'F')
+        self.mfcc = np.reshape(MFCC, (-1, alto, ancho, 1), 'F')
         alto, ancho = esp.shape
-        esp = np.reshape(esp, (-1, alto, ancho, 1), 'F')
-        clase = np.argmax(self.model.predict([esp, MFCC]), axis=-1)
+        self.esp = np.reshape(esp, (-1, alto, ancho, 1), 'F')
 
+    def predict(self):
+        clase = np.argmax(self.modelo.predict([self.esp, self.mfcc]), axis=-1)
         if clase[0] == 0:
             print(colored('0', 'magenta'))
         elif clase[0] == 1:
@@ -110,16 +117,20 @@ class AudioHandler(object):
 if __name__ == '__main__':
     audio = AudioHandler()
     run = True
+    threads = False
     while run:
-        # print(threading.active_count())
-        toProcess =audio.listen()
-        audio.processBlock(toProcess)
-        # x = threading.Thread(target=self.processBlock, args=(toProcess,))
-        # x.start()
-        if threading.active_count() > 10:
-            run = False
+        toProcess = audio.listen()
+        if threads:
+            # print(threading.active_count())
+            x = threading.Thread(target=audio.processBlock, args=(toProcess,))
+            x.start()
+            if threading.active_count() > 10:
+                run = False
+        else:
+            audio.preprocesing(toProcess)
+            audio.predict()
 
-    while threading.active_count() > 1:
+    while threading.active_count() > 0:
         print('Cerrando Threads')
         time.sleep(0.5)
 
