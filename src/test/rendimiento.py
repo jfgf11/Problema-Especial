@@ -7,49 +7,33 @@ import librosa
 from tensorflow.keras.models import model_from_json
 import psutil
 
-modelo = 'modelo_final'
-pesos = 'pesos_modelo_final'
-
-rutaModelo = "./src/modelo/" + modelo + ".json"
-rutaPesos = "./src/modelo/" + pesos + ".h5"
-
-SAMPLE_RATE = 22050
-window_length_stft_mfcc = 0.032
-window_length_stft_esp = 0.025
-Step_size_stft = 0.01
-ventana_Tiempo_ = 0.450
-INPUT_FRAMES_PER_BLOCK = int(SAMPLE_RATE * ventana_Tiempo_)
-
-
-def get_rms(block):
-    return np.sqrt(np.mean(np.square(block)))
-
-
-def cargarModelo(pRutaModelo, pRutaPesos):
-    archivo_json = open(pRutaModelo, 'r')
-    modelo_json = archivo_json.read()
-    archivo_json.close()
-    m = model_from_json(modelo_json)
-    m.load_weights(pRutaPesos)
-    return m
-
 
 class AudioHandler(object):
 
     def __init__(self):
+        self.model_source = 'model/final_model.json'
+        self.model_weights = 'model/final_model_weights.h5'
+        self.sample_rate = 22050
+        self.window_length_stft_mfcc = 0.032
+        self.window_length_stft_esp = 0.025
+        self.step_size_stft = 0.01
+        self.time_window = 0.450
+        self.input_frames_per_block = int(self.sample_rate * self.time_window)
+
         self.mfcc = None
         self.esp = None
-        self.modelo = None
+        self.model = self.load_model()
         self.pa = pyaudio.PyAudio()
         self.stream = self.open_mic_stream()
-        self.iniciar()
-        self.plot_counter = 0
-
 
     def stop(self):
         self.stream.close()
 
     def find_input_device(self):
+        """
+        list all the input devices
+        :return: index of the selected input device
+        """
         print("----------------------record device list---------------------")
         info = self.pa.get_host_api_info_by_index(0)
         numdevices = info.get('deviceCount')
@@ -65,34 +49,58 @@ class AudioHandler(object):
         return index
 
     def open_mic_stream(self):
+        """
+        starts the stream to record audio signals
+        :return: stream
+        """
         device_index = self.find_input_device()
-        stream = self.pa.open(format=pyaudio.paInt16, channels=1, rate=SAMPLE_RATE, input=True,
-                              input_device_index=device_index, frames_per_buffer=INPUT_FRAMES_PER_BLOCK)
+        stream = self.pa.open(format=pyaudio.paInt16, channels=1, rate=self.sample_rate, input=True,
+                              input_device_index=device_index, frames_per_buffer=self.input_frames_per_block)
         return stream
 
-    def iniciar(self):
-        self.modelo = cargarModelo(rutaModelo, rutaPesos)
+    def load_model(self):
+        """
+        loads the model and its weights
+        :return: pre trained model
+        """
+        archivo_json = open(self.model_source, 'r')
+        modelo_json = archivo_json.read()
+        archivo_json.close()
+        m = model_from_json(modelo_json)
+        m.load_weights(self.model_weights)
+        return m
 
     def preprocesing(self, p_audio):
+        """
+        gets the mfcc and mel spectrogram from the audio signal
+        :param: p_audio: raw audio signal
+        """
 
         audio_n = p_audio / 1.0
 
-        MFCC = librosa.feature.mfcc(y=audio_n, sr=SAMPLE_RATE, n_mfcc=20,
-                                    n_fft=int(window_length_stft_mfcc * SAMPLE_RATE),
-                                    hop_length=int(Step_size_stft * SAMPLE_RATE), htk=True)
-        esp = librosa.feature.melspectrogram(y=audio_n, sr=SAMPLE_RATE, n_fft=int(window_length_stft_esp * SAMPLE_RATE),
-                                             hop_length=int(Step_size_stft * SAMPLE_RATE))
+        MFCC = librosa.feature.mfcc(y=audio_n, sr=self.sample_rate, n_mfcc=20,
+                                    n_fft=int(self.window_length_stft_mfcc * self.sample_rate),
+                                    hop_length=int(self.step_size_stft * self.sample_rate), htk=True)
+        esp = librosa.feature.melspectrogram(y=audio_n, sr=self.sample_rate,
+                                             n_fft=int(self.window_length_stft_esp * self.sample_rate),
+                                             hop_length=int(self.step_size_stft * self.sample_rate))
         alto, ancho = MFCC.shape
         self.mfcc = np.reshape(MFCC, (-1, alto, ancho, 1), 'F')
         alto, ancho = esp.shape
         self.esp = np.reshape(esp, (-1, alto, ancho, 1), 'F')
 
     def predict(self):
-        np.argmax(self.modelo.predict([self.esp, self.mfcc]), axis=-1)
+        """
+        given the mfcc and mel spectrogram the model gives a prediction
+        """
+        np.argmax(self.model.predict([self.esp, self.mfcc]), axis=-1)
 
     def listen(self):
+        """
+        record an audio
+        """
         try:
-            raw_block = self.stream.read(INPUT_FRAMES_PER_BLOCK, exception_on_overflow=False)
+            raw_block = self.stream.read(self.input_frames_per_block, exception_on_overflow=False)
             count = len(raw_block) / 2
             formato = '%dh' % count
             muestra = np.array(struct.unpack(formato, raw_block))

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library path="Proyecto Especial/data/audios/"> <!--route where the audio files are stored-->
+   <!--suggested structure to save the data in the xml file-->
+   <!--ScreamType: Background noice(0) Ahhh (1), Auxilio (2), Ayuda (3)-->
+   <!--Angle: n60 (-60Â°) 0 (0Â°) 60 (60Â°)-->
+   <!--meters: 3m (3 meters) 6m (6 meters) 9m (9 meters)-->
+   <!--Gender: M(Male) F(Female)-->
+   <events idx="1" type="cell" size="1 27" gender="M"> <!--number of non zero events occuring in one audio xml-->
+      <!-- Audio from 1 to 3 angle -60 distance 3 meters-->
+      <audio id="01"> <!--Audio 1-->
+         <STARTSECOND type="double" >13</STARTSECOND> <!--Start of first of the event-->
+         <ENDSECOND type="double" >14.551</ENDSECOND> <!--End of first of the event-->
+         <CLASS_ID type="short" >1</CLASS_ID> <!-- class 1 = ahhhhh-->
+         <CLASS_NAME type="String" >Ahhh_3m_n60</CLASS_NAME><!--ScreamType_meters_angle-->
+      </audio>
+      <audio id="02">
+         <STARTSECOND type="double" >18.000</STARTSECOND>
+         <ENDSECOND type="double" >19.189</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID> <!-- class 2 = auxilio-->
+         <CLASS_NAME type="String" >Auxilio_3m_n60</CLASS_NAME>
+      </audio>
+      <audio id="03">
+      <STARTSECOND type="double" >19.508</STARTSECOND>
+         <ENDSECOND type="double" >20.407</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID> <!-- class 3 = ayuda-->
+         <CLASS_NAME type="String" >Ayuda_3m_n60</CLASS_NAME>
+      </audio>
+      <!-- Audio from 4 to 6: angle 0 distance 3 meters-->
+      <audio id="04">
+         <STARTSECOND type="double" >31.902</STARTSECOND>
+         <ENDSECOND type="double" >32.970</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_3m_0</CLASS_NAME>
+      </audio>
+      <audio id="05">
+         <STARTSECOND type="double" >33.945</STARTSECOND>
+         <ENDSECOND type="double" >35.233</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_3m_0</CLASS_NAME>
+      </audio>
+      <audio id="06">
+      <STARTSECOND type="double" >35.651</STARTSECOND>
+         <ENDSECOND type="double" >36.652</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_3m_0</CLASS_NAME>
+      </audio>
+      <!-- Audio from 7 to 9: angle 60 distance 3 meters-->
+      <audio id="07">
+         <STARTSECOND type="double" >40.969</STARTSECOND>
+         <ENDSECOND type="double" >42.057</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_3m_60</CLASS_NAME>
+      </audio>
+      <audio id="08">
+         <STARTSECOND type="double" >42.476</STARTSECOND>
+         <ENDSECOND type="double" >43.639</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_3m_60</CLASS_NAME>
+      </audio>
+      <audio id="09">
+      <STARTSECOND type="double" >44.875</STARTSECOND>
+         <ENDSECOND type="double" >44.914</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_3m_60</CLASS_NAME>
+      </audio>
+
+      <!-- Audio from 10 to 12: angle -60 distance 6 meters-->
+      <audio id="10"> <!--Audio 1-->
+         <STARTSECOND type="double" >58.426</STARTSECOND> <!--Start second of the event-->
+         <ENDSECOND type="double" >59.340</ENDSECOND> <!--End second of the event-->
+         <CLASS_ID type="short" >1</CLASS_ID> <!-- class 1 = ahhhhh-->
+         <CLASS_NAME type="String" >Ahhh_6m_n60</CLASS_NAME><!--ScreamType_meters_angle-->
+      </audio>
+      <audio id="11">
+         <STARTSECOND type="double" >59.432</STARTSECOND>
+         <ENDSECOND type="double" >60.676</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID> <!-- class 2 = auxilio-->
+         <CLASS_NAME type="String" >Auxilio_6m_n60</CLASS_NAME>
+      </audio>
+      <audio id="12">
+      <STARTSECOND type="double" >60.750</STARTSECOND>
+         <ENDSECOND type="double" >61.951 </ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID> <!-- class 3 = ayuda-->
+         <CLASS_NAME type="String" >Ayuda_6m_n60</CLASS_NAME>
+      </audio>
+      <!-- Audio from 13 to 15: angle 0 distance 6 meters-->
+      <audio id="13">
+         <STARTSECOND type="double" >69.682</STARTSECOND>
+         <ENDSECOND type="double" >70.769</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_6m_0</CLASS_NAME>
+      </audio>
+      <audio id="14">
+         <STARTSECOND type="double" >71.220</STARTSECOND>
+         <ENDSECOND type="double" >72.476</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_6m_0</CLASS_NAME>
+      </audio>
+      <audio id="15">
+      <STARTSECOND type="double" >72.670</STARTSECOND>
+         <ENDSECOND type="double" >73.795</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_6m_0</CLASS_NAME>
+      </audio>
+      <!-- Audio from 16 to 18: angle 60 distance 6 meters-->
+      <audio id="16">
+         <STARTSECOND type="double" >79.802</STARTSECOND>
+         <ENDSECOND type="double" >80.882</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_6m_60</CLASS_NAME>
+      </audio>
+      <audio id="17">
+         <STARTSECOND type="double" >81.000</STARTSECOND>
+         <ENDSECOND type="double" >82.270</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_6m_60</CLASS_NAME>
+      </audio>
+      <audio id="18">
+      <STARTSECOND type="double" >82.280</STARTSECOND>
+         <ENDSECOND type="double" >83.420</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_6m_60</CLASS_NAME>
+      </audio>
+
+      <!-- Audio from 19 to 21: angle -60 distance 9 meters-->
+      <audio id="19">
+         <STARTSECOND type="double" >101.132</STARTSECOND> <!--Start second of the event-->
+         <ENDSECOND type="double" >102.150</ENDSECOND> <!--End second of the event-->
+         <CLASS_ID type="short" >1</CLASS_ID> <!-- class 1 = ahhhhh-->
+         <CLASS_NAME type="String" >Ahhh_9m_n60</CLASS_NAME><!--ScreamType_meters_angle-->
+      </audio>
+      <audio id="20">
+         <STARTSECOND type="double" >102.195</STARTSECOND>
+         <ENDSECOND type="double" >103.407</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID> <!-- class 2 = auxilio-->
+         <CLASS_NAME type="String" >Auxilio_9m_n60</CLASS_NAME>
+      </audio>
+      <audio id="21">
+      <STARTSECOND type="double" >103.564</STARTSECOND>
+         <ENDSECOND type="double" >104.576</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID> <!-- class 3 = ayuda-->
+         <CLASS_NAME type="String" >Ayuda_9m_n60</CLASS_NAME>
+      </audio>
+      <!-- Audio from 22 to 24: angle 0 distance 9 meters-->
+      <audio id="22">
+         <STARTSECOND type="double" >113.144</STARTSECOND>
+         <ENDSECOND type="double" >114.163</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_9m_0</CLASS_NAME>
+      </audio>
+      <audio id="23">
+         <STARTSECOND type="double" >114.282</STARTSECOND>
+         <ENDSECOND type="double" >115.482</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_9m_0</CLASS_NAME>
+      </audio>
+      <audio id="24">
+      <STARTSECOND type="double" >115.576</STARTSECOND>
+         <ENDSECOND type="double" >116.720</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_9m_0</CLASS_NAME>
+      </audio>
+      <!-- Audio from 25 to 27: angle 60 distance 9 meters-->
+      <audio id="25">
+         <STARTSECOND type="double" >128.832</STARTSECOND>
+         <ENDSECOND type="double" >129.845</ENDSECOND>
+         <CLASS_ID type="short" >1</CLASS_ID>
+         <CLASS_NAME type="String" >Ahhh_9m_60</CLASS_NAME>
+      </audio>
+      <audio id="26">
+         <STARTSECOND type="double" >129.926</STARTSECOND>
+         <ENDSECOND type="double" >131.152</ENDSECOND>
+         <CLASS_ID type="short" >2</CLASS_ID>
+         <CLASS_NAME type="String" >Auxilio_9m_60</CLASS_NAME>
+      </audio>
+      <audio id="27">
+      <STARTSECOND type="double" >131.182</STARTSECOND>
+         <ENDSECOND type="double" >132.458</ENDSECOND>
+         <CLASS_ID type="short" >3</CLASS_ID>
+         <CLASS_NAME type="String" >Ayuda_9m_60</CLASS_NAME>
+      </audio>
+   </events>
+   <background idx="1">
+      <audio id="00000">
+         <CLASS_ID type="double" >0</CLASS_ID>
+         <CLASS_NAME  type="char" >background</CLASS_NAME>
+         <SUBCLASS  type="String" >lowNoice</SUBCLASS>
+      </audio>
+   </background>
+</library>
